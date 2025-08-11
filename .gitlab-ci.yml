@@ -1,0 +1,23 @@
+#before_script:
+#  - pip install -r requirements.txt
+
+pages:
+  stage: deploy
+  image: python:3.11.5
+  script:
+    - pip install mkdocs-material mkdocs-jupyter 
+    - mkdocs build --site-dir public
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .cache/ 
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+
+#  needs: []
+#  only:
+#    - main # only update pages from main branch

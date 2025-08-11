@@ -1,0 +1,31 @@
+Hi, hier die Mnemoliste: Sammlung: Mnemoliste (Organisationseinheits-Kürzel) - Dokumente und Links (DLR-Intranet)
+Und hier ein Programmplan: Fachinformation: Programmplan Raumfahrt 2024 - Informationen nach Thema (DLR-Intranet)
+Bei der Mnemoliste benötigen wir zu jeder Organisationseinheit neben dem Mnemo und den Standorten auch die übergeordnete OE (fette Schrift). Bei den Programmplänen gab es wohl vor allem beim Ressourcenüberblick Probleme.
+Wäre super wenn das auch mit Docling klappt :D
+
+
+TODO:
+- Modularer Code
+- Prototyp: Wrapper um die offiziellen implementierungen
+- RAG Klassen um eine einfache nutzung zu ermöglichen
+	-> Klassen ansprechen und ggf. indexing und query durchführen
+		- bei instanziierung RAG Parameter, LLM Parameter einstellen können
+		- 
+- Pipeline Integration mit den RAG Klassen 
+	-> OrbAit im Fokus, daher eventuell nur für die Masterarbeit als demo für die Physiker oder für den einfachen chat und export der chats
+
+Vfchatbot gespräch:
+- LLM Clienten umgeschrieben für zukünftige async generation und openai api integration
+- config ini mit weiteren LLM und ollama parametern ausbauen (keep alive, temp, top p, top k, )
+- Leiden Algorithmus von der Library verwenden und den vorhandenen tauschen
+- RAG Klassen erstellen 
+- Folien verwenden
+- Jonas und Christian feilen die vorhandenen varianten weiter aus und machen keine neuen, arbeiten hauptsächlich an der besten technik, der in den Folien beschrieben ist und mit community embeddings arbeitet
+- Christian versucht eine weitere Datenbank zu integrieren bzw. das ganze Datenbank unabhängiger zu machen
+- weiterhin versuchen Sie den Code modularer zu machen bzw. den Query part auf den CAG graphen anzupassen für den RAGtoCAG approach
+- Jonas arbeitet auch an dem pdf to md parsing und anderen preprocessing schritten die man optimieren kann
+
+TODO:
+- RAGLib wieder angleichen mit Lap
+- der vfchatbot code klappt nur mit der neuen requirements datei mit den spezifischen versionen (elastic muss z.B. eine spezielle version haben), requirements und die repo updates verwenden und die dateien in raglib tauschen
+- Ragklassen erstellen und mit z.B. GARAG eine Jupyter notebook demo machen, wie mans verwendet etc. mit einem testdatensatz, z.B. Gutenberg

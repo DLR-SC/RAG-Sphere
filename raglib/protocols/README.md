@@ -1,0 +1,1 @@
+protocols/ contain abstract classes (contracts for behavior).
