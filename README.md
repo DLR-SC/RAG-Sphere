@@ -1,7 +1,7 @@
 <div align="center">
 
 <div style="margin: 20px 0;">
-  <img src="./docs/illustrations/logo_cut.png" alt="LightRAG Logo" style="border-radius: 20px; box-shadow: 0 8px 32px rgba(0, 217, 255, 0.3);width: 220px;">
+  <img src="./docs/illustrations/raglib.png" alt="LightRAG Logo" style="border-radius: 20px; box-shadow: 0 8px 32px rgba(0, 217, 255, 0.3);width: 120px;">
 </div>
 
 
