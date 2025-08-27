@@ -1,9 +1,6 @@
 <div align="center">
 
-<div style="margin: 20px 0;">
-  <img src="./docs/illustrations/raglib.png" alt="LightRAG Logo" style="border-radius: 200px; box-shadow: 0 8px 32px rgba(0, 217, 255, 0.3);width: 2px;">
-</div>
-
+<img src="./docs/illustrations/raglib.png" alt="RAGLib Logo" width="150">
 
 # 🏛️ RAGLib
 ## A Unified Library of Retrieval-Augmented Generation Techniques with Implementations, Comparisons, and a Practical Selection Guide
