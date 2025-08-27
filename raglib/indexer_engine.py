@@ -37,13 +37,17 @@ from models.indexer import (
     GARAGIndexerConfig,
     GraphRAGIndexerConfig,
     NaiveGRIndexerConfig,
-    NaiveRAGIndexerConfig
+    NaiveRAGIndexerConfig,
+    VectorGRIndexerConfig,
+    HybridGRIndexerConfig
 )
 from graphrag.indexer import (
     GraphRAGIndexer,
     NaiveGraphRAGIndexer,
     GARAGIndexer,
-    NaiveRAGIndexer
+    NaiveRAGIndexer,
+    VectorGRIndexer,
+    HybridGRIndexer
 )
 
 class IndexerEngine:
@@ -51,8 +55,8 @@ class IndexerEngine:
     documents: str                                          # Document path
     graph_db: Union[DatabaseType, ArangoDBClient]           # Graph database, for now only str input supported
     vector_db: Union[DatabaseType, Elasticsearch]           # Vector database, for now only str input supported
-    llm: LLMClient                                          # LLM client for the indexing phase
-    emb_model: SentenceTransformer                          # Embedding model
+    llm: Optional[LLMClient] = None                         # LLM client for the indexing phase
+    emb_model: Optional[SentenceTransformer] = None         # Embedding model
     indexer: Union[IndexerType, BaseIndexer]                # Low level indexer class or indexer type
     indexer_config: Optional[Union[Dict[str, Any], BaseIndexerConfig]]
     
@@ -62,9 +66,9 @@ class IndexerEngine:
             documents: str,
             graph_db: Union[DatabaseType, ArangoDBClient],
             vector_db: Union[DatabaseType, Elasticsearch],
-            llm: LLMClient,
-            emb_model: SentenceTransformer,
             indexer: Union[IndexerType, BaseIndexer],
+            llm: Optional[LLMClient] = None,
+            emb_model: Optional[SentenceTransformer] = None,
             indexer_config: Optional[Union[Dict[str, Any], BaseIndexerConfig]] = None
     ) -> None:
         # Get config file with default values
@@ -118,9 +122,9 @@ class IndexerEngine:
             documents: str,
             graph_db: Union[DatabaseType, ArangoDBClient],
             vector_db: Union[DatabaseType, Elasticsearch],
-            llm: LLMClient,
-            emb_model: SentenceTransformer,
             indexer: IndexerType,
+            llm: Optional[LLMClient] = None,
+            emb_model: Optional[SentenceTransformer] = None,
             indexer_config: Optional[BaseIndexerConfig] = None
     ) -> BaseIndexer:
         """ Get Indexer """
@@ -143,6 +147,10 @@ class IndexerEngine:
                 return GraphRAGIndexer(**class_args)
             case IndexerType.VECTOR:
                 return NaiveRAGIndexer(**class_args)
+            case IndexerType.VECTORGR:
+                return VectorGRIndexer(**class_args)
+            case IndexerType.HYBRIDGR:
+                return HybridGRIndexer(**class_args)
             case _:
                 raise ValueError(f"Unknown indexer type")
 
@@ -157,8 +165,12 @@ class IndexerEngine:
                 return GraphRAGIndexerConfig
             case IndexerType.VECTOR:
                 return NaiveRAGIndexerConfig
+            case IndexerType.VECTORGR:
+                return VectorGRIndexerConfig
+            case IndexerType.HYBRIDGR:
+                return HybridGRIndexerConfig
             case _:
                 raise ValueError(f"Unknown indexer name")
 
-    def index(self):
-        return self.indexer.index()
+    def index(self, **kwargs: Any):
+        return self.indexer.index(**kwargs)

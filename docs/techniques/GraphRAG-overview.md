@@ -1,14 +1,11 @@
 # Microsoft GraphRAG: <br/> Enhancing Retrieval-Augmented Generation with Knowledge Graphs
 
- 
 ## Overview
 
- 
 Microsoft GraphRAG is an advanced Retrieval-Augmented Generation (RAG) system that integrates knowledge graphs to improve the performance of large language models (LLMs). Developed by Microsoft Research, GraphRAG addresses limitations in traditional RAG approaches by using LLM-generated knowledge graphs to enhance document analysis and improve response quality.
 
 ## Motivation
 
- 
 Traditional RAG systems often struggle with complex queries that require synthesizing information from disparate sources. GraphRAG aims to:
 Connect related information across datasets.
 Enhance understanding of semantic concepts.
@@ -20,18 +17,18 @@ Knowledge Graph Generation: Constructs graphs with entities as nodes and relatio
 Community Detection: Identifies clusters of related entities within the graph.
 Summarization: Generates summaries for each community to provide context for LLMs.
 Query Processing: Uses these summaries to enhance the LLM's ability to answer complex questions.
+
 ## Method Details
 
-Indexing Stage
+### Indexing Stage
 
- 
 Text Chunking: Splits source texts into manageable chunks.
 Element Extraction: Uses LLMs to identify entities and relationships.
 Graph Construction: Builds a graph from the extracted elements.
 Community Detection: Applies algorithms like Leiden to find communities.
 Community Summarization: Creates summaries for each community.
 
-Query Stage
+### Query Stage
 
  
 Local Answer Generation: Uses community summaries to generate preliminary answers.
@@ -47,11 +44,3 @@ Microsoft GraphRAG represents a significant step forward in retrieval-augmented 
 
 For those experienced with basic RAG systems, GraphRAG offers an opportunity to explore more sophisticated solutions, although it may not be necessary for all use cases.
 Retrieval Augmented Generation (RAG) is often performed by chunking long texts, creating a text embedding for each chunk, and retrieving chunks for including in the LLM generation context based on a similarity search against the query. This approach works well in many scenarios, and at compelling speed and cost trade-offs, but doesn't always cope well in scenarios where a detailed understanding of the text is required.
-
-
-<p align="center">
-<img src="/illustrations/Microsoft_GraphRag.svg" alt="Figure 1: Diagram of the Microsoft GraphRag approach" width="500"/>
-</p>
-<p align="center">
-
-</p>

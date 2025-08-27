@@ -4,7 +4,6 @@
     font-display: swap;
   }
 
-
 [data-md-color-scheme="dlr"] {
     --md-default-bg-color: rgb(250, 250, 250);
     --md-primary-bg-color: rgb(255, 255, 255);
@@ -57,8 +56,6 @@
     /* --md-footer-bg-color--dark: var(--md-default-bg-color); */
 }
 
-
-
 /* Better contrast link colors */
 [data-md-color-scheme="default"] > * {
     --md-typeset-a-color: #00B1BB;
@@ -76,34 +73,33 @@
 
 /* buttons */
 .md-typeset .md-button {
-    color: var(--md-typeset-color);
-    background: none;
-    border: 1px solid var(--pg-light-border);
-    border-radius: 6px;
-    box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 3px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px -1px;
+  color: var(--md-typeset-color);
+  background: none;
+  border: 1px solid var(--pg-light-border);
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 3px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px -1px;
 }
 .md-typeset .md-button--primary {
-    color: var(--md-typeset-a-color);
-    background-color: var(--md-primary-fg-color);
+  color: var(--md-typeset-a-color);
+  background-color: var(--md-primary-fg-color);
 }
-
 
 /* typewriter */
 #typewriter {
-    color: var(--md-accent-fg-color);
+  color: var(--md-accent-fg-color);
 }
 
 /* header font */
 .md-header__topic:first-child {
-    font-family: 'Satoshi';
-    font-weight: 700;
+  font-family: 'Satoshi';
+  font-weight: 700;
 }
 
 .md-typeset h1 {
-    font-family: 'Satoshi';
-    font-weight: 700;
-    color: var(--md-typeset-a-color);
-    font-size: 1.4rem;
+  font-family: 'Satoshi';
+  font-weight: 700;
+  color: var(--md-typeset-a-color);
+  font-size: 1.4rem;
 }
   
 h2, h3 {
@@ -112,7 +108,7 @@ h2, h3 {
 
 /* Un-sticky sidebar without JS */
 .no-js .md-sidebar {
-    align-self: auto;
+  align-self: auto;
 }
 
 /* Make header icons smaller */
@@ -154,9 +150,6 @@ a.internal-link::after {
     width: 1.6rem;  /* Vergrößere hier die Breite */
 }
 
-
-
-
 /* Accent color */
 .accent {
   color: var(--md-typeset-a-color);
@@ -189,10 +182,9 @@ a.internal-link::after {
   flex-basis: calc(50% - 10px);
 }
 .flex-item img {
-  padding: 3rem 1rem;
+  padding: 3rem 1rem; /* padding: 3rem 1rem; */
 }
   
-
 /* Fix mobile search with blurred header 
 Causes a delay when opening search, not optimal */
 [data-md-scrolllock] .md-header,
@@ -202,3 +194,25 @@ Causes a delay when opening search, not optimal */
 }
 
 
+/* Prevent main content from overlapping */
+.md-main__inner {
+  margin-left: 50px; /* same as sidebar width */
+}
+
+/* Maximum space for text block */
+.md-grid {
+  max-width: 90%; /* or 100%, if you want to stretch to full-width */
+}
+
+
+
+/* Target homepage (index.md) content only */
+.md-main__inner > .md-typeset {
+  text-align: center;
+}
+
+/* Center tables inside homepage */
+.md-main__inner > .md-typeset table {
+  margin-left: auto;
+  margin-right: auto;
+}

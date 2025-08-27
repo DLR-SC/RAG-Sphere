@@ -32,6 +32,8 @@ from models.indexer import (
     GraphRAGIndexerConfig,
     NaiveGRIndexerConfig,
     NaiveRAGIndexerConfig,
+    VectorGRIndexerConfig,
+    HybridGRIndexerConfig,
     TemplateIndexerConfig
 )
 
@@ -46,8 +48,7 @@ from graphrag.index.KG_3_ProcessKnowledgeGraph import process_knowledge_graph
 from graphrag.index.KG_4_InitLeidenCommunities import build_communities
 from graphrag.index.KG_5_CreateCommunitySummaries import summarize_communities
 from graphrag.index.KG_6_CreateCommunityIndices import generate_community_indices
-
-# import networkx as nx
+from graphrag.index.neo4j_indexer import _graphrag_index
 
 class GARAGIndexer(BaseIndexer):
     # For documentation and validation purposes 
@@ -78,7 +79,7 @@ class GARAGIndexer(BaseIndexer):
             emb_model=emb_model
         )
 
-    def index(self):
+    def index(self, **kwargs: Any):
         logger.info(f"DOING '{self.name.value}' INDEXING WITH {self.config}")
 
         # Indexing
@@ -121,7 +122,7 @@ class GraphRAGIndexer(BaseIndexer):
             emb_model=emb_model
         )
 
-    def index(self):
+    def index(self, **kwargs: Any):
         logger.info(f"DOING '{self.name.value}' INDEXING WITH {self.config}")
 
         # Indexing
@@ -164,7 +165,7 @@ class NaiveGraphRAGIndexer(BaseIndexer):
             emb_model=emb_model
         )
 
-    def index(self):
+    def index(self, **kwargs: Any):
         logger.info(f"DOING '{self.name.value}' INDEXING WITH {self.config}")
 
         # Indexing
@@ -207,7 +208,7 @@ class NaiveRAGIndexer(BaseIndexer):
             emb_model=emb_model
         )
 
-    def index(self):
+    def index(self, **kwargs: Any):
         logger.info(f"DOING '{self.name.value}' INDEXING WITH {self.config}")
         
         # Indexing -> Adjust the indexing method to vector indexing!
@@ -221,14 +222,87 @@ class NaiveRAGIndexer(BaseIndexer):
             emb_model=self.emb_model
         )
 
+
+class VectorGRIndexer(BaseIndexer):
+    # For documentation and validation purposes 
+    name: ClassVar[IndexerType] = IndexerType.VECTORGR
+    config: VectorGRIndexerConfig
+    parameter_schema: ClassVar[Dict[str, Any]] = {}
+
+    def __init__(
+            self,
+            parameter: Optional[Dict[str, Any]] = None, 
+            config: Optional[VectorGRIndexerConfig] = None,
+            config_parser: ConfigParser = None,
+            documents: Optional[str] = None, 
+            graph_db: Optional[Union[DatabaseType, ArangoDBClient]] = None, 
+            vector_db: Optional[Union[DatabaseType, Elasticsearch]] = None, 
+            llm: Optional[LLMClient] = None, 
+            emb_model: Optional[SentenceTransformer] = None
+    ) -> None:
+        super().__init__(
+            parameter=parameter,
+            config=config,
+            cls_indexer_config=VectorGRIndexerConfig,
+            documents=documents,
+            config_parser=config_parser,
+            graph_db=graph_db,
+            vector_db=vector_db,
+            llm=llm,
+            emb_model=emb_model
+        )
+
+    def index(self, **kwargs: Any) -> None:
+        logger.info(f"DOING '{self.name.value}' INDEXING WITH {self.config}")
+        
+        _graphrag_index(
+            config = self.config,
+            config_parser = self.config_parser
+        )
+
+class HybridGRIndexer(BaseIndexer):
+    # For documentation and validation purposes 
+    name: ClassVar[IndexerType] = IndexerType.HYBRIDGR
+    config: HybridGRIndexerConfig
+    parameter_schema: ClassVar[Dict[str, Any]] = {}
+
+    def __init__(
+            self,
+            parameter: Optional[Dict[str, Any]] = None, 
+            config: Optional[HybridGRIndexerConfig] = None,
+            config_parser: ConfigParser = None,
+            documents: Optional[str] = None, 
+            graph_db: Optional[Union[DatabaseType, ArangoDBClient]] = None, 
+            vector_db: Optional[Union[DatabaseType, Elasticsearch]] = None, 
+            llm: Optional[LLMClient] = None, 
+            emb_model: Optional[SentenceTransformer] = None
+    ) -> None:
+        super().__init__(
+            parameter=parameter,
+            config=config,
+            cls_indexer_config=HybridGRIndexerConfig,
+            documents=documents,
+            config_parser=config_parser,
+            graph_db=graph_db,
+            vector_db=vector_db,
+            llm=llm,
+            emb_model=emb_model
+        )
+
+    def index(self, **kwargs: Any) -> None:
+        logger.info(f"DOING '{self.name.value}' INDEXING WITH {self.config}")
+        
+        _graphrag_index(
+            config = self.config,
+            config_parser = self.config_parser
+        )
+    
+
 class TemplateIndexer(BaseIndexer):
     # For documentation and validation purposes 
     name: ClassVar[IndexerType] = IndexerType.TEMP
     config: TemplateIndexerConfig
-    parameter_schema: ClassVar[Dict[str, Any]] = {
-        "chunk_size": int,
-        "chunk_overlap": int,
-    }
+    parameter_schema: ClassVar[Dict[str, Any]] = {}
 
     def __init__(
             self,
@@ -255,6 +329,7 @@ class TemplateIndexer(BaseIndexer):
 
     def index(self):
         pass
+
 
 
 def _index(

@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 import os
 import json
-import time
 from traceback import format_exc
 from sentence_transformers import SentenceTransformer
 from elasticsearch import Elasticsearch
@@ -152,8 +151,8 @@ class RAG(BaseRAG):
         # GraphDB input validation and enum conversion
         if graph_db is None:
             logger.info("The graph database has not been specified.")
-            logger.info("Using default graph database: 'ArangoDB'\n")
-            self.graph_db = DatabaseType.ARANGODB
+            logger.info("Using default graph database: 'Neo4j'\n")
+            self.graph_db = DatabaseType.NEO4J
         elif isinstance(graph_db, str):
             try:
                 self.graph_db = DatabaseType(graph_db)
@@ -166,8 +165,8 @@ class RAG(BaseRAG):
         # VectorDB input validation and enum conversion
         if vector_db is None:
             logger.info("The vector database has not been specified.")
-            logger.info("Using default vector database: 'Elasticsearch'\n")
-            self.vector_db = DatabaseType.ELASTICSEARCH
+            logger.info("Using default vector database: 'Neo4j'\n")
+            self.vector_db = DatabaseType.NEO4J
         elif isinstance(vector_db, str):
             try:
                 self.vector_db = DatabaseType(vector_db)
@@ -183,7 +182,9 @@ class RAG(BaseRAG):
             default_model = self.config.get("llm_index", "model_name")
             logger.info("The indexing LLM has not been specified.")
             logger.info(f"Using the default indexing LLM: '{default_model}'\n")
-            self.llm_index = self._get_llm(config=self.config, index=True)
+            self.llm_index = None
+            if self.graph_db!=DatabaseType.NEO4J:
+                self.llm_index = self._get_llm(config=self.config, index=True)
         elif isinstance(llm_index, LLMClient):
             self.llm_index = llm_index
             logger.info(f"The indexing LLM is set to: '{llm_index.model_name}'\n")
@@ -195,7 +196,9 @@ class RAG(BaseRAG):
             default_model = self.config.get("llm_query", "model_name")
             logger.info("The query LLM has not been specified.")
             logger.info(f"Using the default query LLM: '{default_model}'\n")
-            self.llm_query = self._get_llm(config=self.config, query=True)
+            self.llm_query = None
+            if self.graph_db!=DatabaseType.NEO4J:
+                self.llm_query = self._get_llm(config=self.config, query=True)
         elif isinstance(llm_query, LLMClient):
             logger.info(f"The query LLM is set to: '{llm_query.model_name}'\n")
             self.llm_query = llm_query
@@ -203,21 +206,25 @@ class RAG(BaseRAG):
             raise ValueError("llm_query must be of type 'LLMClient'")
 
         # Test llm connection (llm_index and llm_query)
-        self.test_llm_connection(llm_index=self.llm_index, llm_query=self.llm_query)
+        if self.llm_index and self.llm_query:
+            self.test_llm_connection(llm_index=self.llm_index, llm_query=self.llm_query)
 
         # Loading Embedding model and input validation
         if emb_model is None:
             default_model = self.config.get("general", "default_embedding_model")
             logger.info("The embedding model has not been specified.")
             logger.info(f"Using the default embedding model: '{default_model}'")
-            self.emb_model = SentenceTransformer(default_model)
+            self.emb_model = None
+            if self.graph_db!=DatabaseType.NEO4J:
+                self.emb_model = SentenceTransformer(default_model)
             logger.info(f"Successfully loaded\n")
         elif isinstance(emb_model, SentenceTransformer):
             self.emb_model = emb_model
         elif isinstance(emb_model, str):
             logger.info(f"The embedding model is set to: '{emb_model}'")
-            self.emb_model = SentenceTransformer(emb_model)
-            logger.info(f"Successfully loaded\n")
+            if self.graph_db!=DatabaseType.NEO4J:
+                self.emb_model = SentenceTransformer(emb_model)
+                logger.info(f"Successfully loaded\n")
         else:
             raise ValueError("emb_model must be of type 'str' or 'SentenceTransformer'")
 
@@ -245,26 +252,31 @@ class RAG(BaseRAG):
             config=self.config
         )
 
-    def index(self, verbosity: Optional[int] = 1) -> None:
+    def index(
+        self, 
+        verbosity: Optional[int] = 1, 
+        **kwargs: Any
+    ) -> None:
         if verbosity:
             self._set_global_logging_level(verbosity)
         if self.indexer is None:
             logger.warning("No indexing technique has been specified.")
         else:
-            self.indexer_engine.index()
+            self.indexer_engine.index(**kwargs)
 
     def query(
             self, 
             prompt: Optional[str] = None, 
             messages: Optional[List[Dict[str,str]]] = None,
-            verbosity: Optional[int] = 1
-    ) -> Optional[List[Any]]:
+            verbosity: Optional[int] = 1,
+            **kwargs: Any
+    ) -> Any:
         if verbosity:
             self._set_global_logging_level(verbosity)
         if self.retriever is None:
             logger.warning("No retrieval technique has been specified.")
         else:
-            return self.query_engine.query(prompt, messages)
+            return self.query_engine.query(prompt, messages, **kwargs)
 
     def _get_llm(
             self, 

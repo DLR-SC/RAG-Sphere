@@ -41,13 +41,20 @@ from models.retriever import (
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
     NaiveGRRetrieverConfig,
-    NaiveRAGRetrieverConfig
+    NaiveRAGRetrieverConfig,
+    VectorGRRetrieverConfig,
+    HybridGRRetrieverConfig,
+    Text2CypherRetrieverConfig
 )
 from graphrag.retriever import (
     GraphRAGRetriever,
     NaiveGraphRAGRetriever,
     GARAGRetriever,
-    NaiveRAGRetriever
+    NaiveRAGRetriever,
+    VectorGRRetriever,
+    HybridGRRetriever,
+    Text2CypherRetriever,
+    TemplateRetriever
 )
 
 class QueryEngine:
@@ -55,8 +62,8 @@ class QueryEngine:
     documents: str                                          # Document path
     graph_db: Union[DatabaseType, ArangoDBClient]           # Graph database, for now only str input supported
     vector_db: Union[DatabaseType, Elasticsearch]           # Vector database, for now only str input supported
-    llm: LLMClient                                          # LLM client for the query phase
-    emb_model: SentenceTransformer                          # Embedding model
+    llm: Optional[LLMClient] = None                         # LLM client for the query phase
+    emb_model: Optional[SentenceTransformer] = None         # Embedding model
     retriever: Union[RetrieverType, BaseRetriever]          # Low level retriever class or retriever type
     retriever_config: Optional[Union[Dict[str, Any], BaseRetrieverConfig]]
 
@@ -66,9 +73,9 @@ class QueryEngine:
             documents: str,
             graph_db: Union[DatabaseType, ArangoDBClient],
             vector_db: Union[DatabaseType, Elasticsearch],
-            llm: LLMClient,
-            emb_model: SentenceTransformer,
             retriever: Union[RetrieverType, BaseRetriever],
+            llm: Optional[LLMClient] = None,
+            emb_model: Optional[SentenceTransformer] = None,
             retriever_config: Optional[Union[Dict[str, Any], BaseRetrieverConfig]] = None
     ) -> None:
         # Get config file with default values
@@ -122,9 +129,9 @@ class QueryEngine:
             documents: str,
             graph_db: Union[DatabaseType, ArangoDBClient],
             vector_db: Union[DatabaseType, Elasticsearch],
-            llm: LLMClient,
-            emb_model: SentenceTransformer,
             retriever: RetrieverType,
+            llm: Optional[LLMClient] = None,
+            emb_model: Optional[SentenceTransformer] = None,
             retriever_config: Optional[BaseRetrieverConfig] = None
     ) -> None:
         """ Get Retriever """
@@ -147,6 +154,12 @@ class QueryEngine:
                 return GraphRAGRetriever(**class_args)
             case RetrieverType.VECTOR:
                 return NaiveRAGRetriever(**class_args)
+            case RetrieverType.VECTORGR:
+                return VectorGRRetriever(**class_args)
+            case RetrieverType.HYBRIDGR:
+                return HybridGRRetriever(**class_args)
+            case RetrieverType.TEXT2CYPHER:
+                return Text2CypherRetriever(**class_args)
             case _:
                 raise ValueError(f"Unknown retriever type")
 
@@ -161,13 +174,20 @@ class QueryEngine:
                 return GraphRAGRetrieverConfig
             case RetrieverType.VECTOR:
                 return NaiveRAGRetrieverConfig
+            case RetrieverType.VECTORGR:
+                return VectorGRRetrieverConfig
+            case RetrieverType.HYBRIDGR:
+                return HybridGRRetrieverConfig
+            case RetrieverType.TEXT2CYPHER:
+                return Text2CypherRetrieverConfig
             case _:
                 raise ValueError(f"Unknown retriever name")
 
     def query(
             self, 
             prompt: Optional[str] = None, 
-            messages: Optional[List[Dict[str,str]]] = None
-    ) -> Optional[List[Any]]:
+            messages: Optional[List[Dict[str,str]]] = None,
+            **kwargs: Any
+    ) -> Any:
         #prompt_build = self.prompt_builder.build(prompt, retrieved_docs) #ToDO
-        return self.retriever.retrieve(prompt=prompt, messages=messages)
+        return self.retriever.retrieve(prompt=prompt, messages=messages, **kwargs)

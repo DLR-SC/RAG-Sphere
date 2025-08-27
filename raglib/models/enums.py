@@ -19,6 +19,8 @@ class IndexerType(str, Enum):
     NAIVEGR = "naivegraphrag"
     GRAPHRAG = "graphrag"
     VECTOR = "naiverag"
+    VECTORGR = "vectorgraphrag"
+    HYBRIDGR = "hybridgraphrag"
     TEMP = "template"
 
 class RetrieverType(str, Enum):
@@ -26,12 +28,16 @@ class RetrieverType(str, Enum):
     NAIVEGR = "naivegraphrag"
     GRAPHRAG = "graphrag"
     VECTOR = "naiverag"
+    VECTORGR = "vectorgraphrag"
+    HYBRIDGR = "hybridgraphrag"
+    TEXT2CYPHER = "text2cypher"
     TEMP = "template"
 
 class DatabaseType(str, Enum):
     POSTGRESQL = "postgresql"
     ELASTICSEARCH = "elasticsearch"
     ARANGODB = "arangodb"
+    NEO4J = "neo4j"
 
 SUPPORTED_COMBINATIONS: List[Tuple[IndexerType, RetrieverType]] = [
     (IndexerType.GARAG, None),
@@ -54,6 +60,12 @@ SUPPORTED_COMBINATIONS: List[Tuple[IndexerType, RetrieverType]] = [
     (IndexerType.NAIVEGR, RetrieverType.GRAPHRAG),
     (IndexerType.NAIVEGR, RetrieverType.NAIVEGR),
     (IndexerType.NAIVEGR, RetrieverType.VECTOR),
-    (IndexerType.VECTOR, RetrieverType.VECTOR)
+    (IndexerType.VECTOR, RetrieverType.VECTOR),
+    (IndexerType.VECTORGR, RetrieverType.VECTORGR),
+    (IndexerType.VECTORGR, None),
+    (IndexerType.HYBRIDGR, RetrieverType.HYBRIDGR),
+    (IndexerType.HYBRIDGR, RetrieverType.VECTORGR),
+    (IndexerType.HYBRIDGR, None),
+    (None, RetrieverType.TEXT2CYPHER)
     # ADD MORE
 ]

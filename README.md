@@ -1,8 +1,34 @@
-# RAGlib Library of RAG algorithms
+<div align="center">
 
-RAGlib provides a high-level implementation of most common RAG algorithms independently from the database backend.
+<div style="margin: 20px 0;">
+  <img src="./docs/illustrations/logo_cut.png" alt="LightRAG Logo" style="border-radius: 20px; box-shadow: 0 8px 32px rgba(0, 217, 255, 0.3);width: 220px;">
+</div>
 
-![overview](docs/illustrations/rag_lib.png)
+
+# 🏛️ RAGLib
+## A Unified Library of Retrieval-Augmented Generation Techniques with Implementations, Comparisons, and a Practical Selection Guide
+
+
+<div align="center">
+  <div style="width: 100%; height: 2px; margin: 20px 0; background: linear-gradient(90deg, transparent, #00d9ff, transparent);"></div>
+</div>
+
+
+<div align="center">
+  <div style="background: linear-gradient(135deg,rgb(102, 219, 234, 0.3) 0%,rgb(43, 170, 255, 0.3) 60%); border-radius: 15px; padding: 25px; text-align: center;">
+    <p>
+      <img src="https://img.shields.io/badge/🐍Python-3.11-4ecdc4?style=for-the-badge&logo=python&logoColor=white&labelColor=1a1a2e">
+      <a href="https://pypi.org/project/"><img src="https://img.shields.io/pypi/v/lightrag-hku.svg?style=for-the-badge&logo=pypi&logoColor=white&labelColor=1a1a2e&color=ff6b6b"></a>
+    </p>
+  </div>
+</div>
+</div>
+<div align="center" style="margin: 30px 0;margin: 0 auto;">
+  <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="1300">
+</div>
+<div align="center" style="margin: 30px 0;">
+    <img src="./docs/illustrations/rag_lib.png" width="400" alt="" title="RAGlib provides a high-level implementation of most common RAG algorithms independently from the database backend.">
+</div>
 
 
 ## 🔧 Getting Started
@@ -67,75 +93,3 @@ An implementation reducing the query time of the Graph Rag implementation. Inste
 ### GARAG
 
 An implementation reducing the halucination of the filtered information. Important communities are first found, using the Graph Rag Rag approach. Then the original document contents are ranked by influence on these summaries and the top results are returned to the user. Therefor this approach can be seen as Graph-Assisted RAG (or GARAG). It is recommended to use this method, as it combines a very fast retrieval time with good precision. 
-
-
-## Config.ini
-
-The config.ini file controlls the entire projekt. Each value is directly used by the programm. This is a list of all the values, their meaning and their default value.
-
-The config file itself can be found [here](resources/config.ini). An example config file of a woring setup can be seen [here](resources/example_config.ini).
-
-
-### general
-
-General settings affecting core parts of the program
-- **data_dir** (path): The path to the folder containing the data, that will be used for the chatbot. This value has to be set by the user, when running the script [KG_1_LoadData.py](KG_1_LoadData.py) during initialization. `Default: not set`
-  
-- **parallel_limit** (int): The maximum amount of threads running in parallel during the program. Also represents the maximum number of threads simoultaniously waiting for a response from a large language model. `Default: 8`
-  
-- **default_rag_method** (str): RAG method used if the RetrievalRequest does not specify one. Can be set to any [RetrievalMethodId](src/eri_components/specification.json).
-`Default: "GARAG#783493"`
-
-- **default_depth** (int): Default depth used if the RetrievalRequest does not specify one and the RAG method requires a depth parameter. `Default: 1`
-
-### security
-- **ssl_cert_path** (path): The path to the certification file for https encryption. When using http, leave this value empty. `Default: not set`
-  
-- **ssl_key_path** (path): The path to the key file for https encryption. When using http, leave this value empty. `Default: not set`
-
-### arangodb
-
-General settings to access the Arango database
-- **username**  (str): The name of the user being used to manage the database. This user has to have read, write and collection and graph create access. `Default: not set`
-  
-- **password** (str): If set, this password will be used to register as the user on the ArangoDB. If `None`, the user will be asked to enter a password at the start of the program execution (Only works during initialization without docker). `Default: not set`
-  
-- **url** (url): The url that will be used to access the ArangoDB. `Default: not set`
-
-### database
-
-General settings to access the Postgres database
-
-- **username** (str): Username for the database login. `Default: postgres`
-- **password** (str): Username for the database login. `Default: root`
-- **host** (hostname): Domain used for accessing the database. `Default: not set`
-- **port** (int): Port used for accessing the database. `Default: not set`
-- **database_name** (str): Name of the database. `Default: postgres`
-
-### elastic
-
-- **url** (url): The url used to store the index data at. `Default: not set`
-
-### LLM (index/query)
-
-Settings controlling the large language model used Settings controlling the large language model used by the program..
-
-- **base_url** (str): The url used to communicate with the llm.
-- **model_name** (str): The name of the model used when communicating with an Ollama server.
-- **api_key** (str): When provided, this api key will be used for all Ollama llm requests.
-- **options** (dict): llm configuration
-
-## Valid file types
-
-This is a list of al file types, recognised by [KG_1_LoadData.py](src/KG_1_LoadData.py):
-
-  - pdf
-  - docx
-  - txt
-  - md
-
-Files not included during reading:
-
-- Files starting with ~$...: These files are usually temporary files used, while the file is open and thus don't provide any information and are ignored.
-
-All other file types raise a warning, which may be examined by the user afterwards in the created log file.

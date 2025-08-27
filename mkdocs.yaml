@@ -98,7 +98,7 @@ markdown_extensions:
   - md_in_html
   - def_list
   # Python Markdown Extensions
-  - pymdownx.fancylists # nur getestet
+  - pymdownx.fancylists
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.betterem:
@@ -163,15 +163,15 @@ nav:
     - Getting Started: getting-started.md
   - Techniques:
     - Overview: techniques/index.md
-    - Simple RAG ↗️: techniques/simpleRAG.md
-    - T-RAG ↗️: techniques/T-RAG.md
-    - GNN-RAG ↗️: techniques/GNN-RAG.md
-    - GraphRAG ↗️: techniques/GraphRAG.md
-    - Microsoft GraphRAG ↗️:
-      - Overview: techniques/GraphRAG-M.md
+    - Vector RAG ◈: techniques/simpleRAG.md
+    - T-RAG ◈: techniques/T-RAG.md
+    - GNN-RAG ◈: techniques/GNN-RAG.md
+    - Microsoft GraphRAG ◈:
+      - Overview: techniques/GraphRAG-overview.md
       - Dataflow: techniques/GraphRAG-dataflow.md
-    - LightRAG ↗️: techniques/LightRAG.md
-    - PathRAG ↗️: techniques/PathRAG.md
+    - GraphRAG Variant ◈: techniques/GraphRAG.md
+    - LightRAG ◈: techniques/LightRAG.md
+    - PathRAG ◈: techniques/PathRAG.md
   - Insights:
     - Overview 💡: insights/index.md
     - Technique Comparison ⚖️: insights/comparison.md

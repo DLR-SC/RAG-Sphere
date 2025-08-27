@@ -34,6 +34,9 @@ from models.retriever import (
     GraphRAGRetrieverConfig,
     NaiveGRRetrieverConfig,
     NaiveRAGRetrieverConfig,
+    VectorGRRetrieverConfig,
+    HybridGRRetrieverConfig,
+    Text2CypherRetrieverConfig,
     TemplateRetrieverConfig
 )
 from protocols.retriever import (
@@ -43,6 +46,7 @@ from protocols.retriever import (
 
 from eri_components.components import RetrievalAnswer, AllowedTypes
 from graphrag.query.generation_api import GenerationAPI
+from graphrag.query.neo4j_retriever import _graphrag_retrieve, _text2cypher_retrieve
 
 class GARAGRetriever(BaseRetriever):
     # For documentation and validation purposes 
@@ -76,7 +80,8 @@ class GARAGRetriever(BaseRetriever):
     def retrieve(
             self, 
             prompt: Optional[str] = None, 
-            messages: Optional[List[Dict[str,str]]] = None
+            messages: Optional[List[Dict[str,str]]] = None,
+            **kwargs: Any
     ) -> List[Any]:
         """ Run retrieval logic """
         logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
@@ -95,7 +100,6 @@ class GARAGRetriever(BaseRetriever):
             emb_model=self.emb_model
         )
         return result
-
 
 class GraphRAGRetriever(BaseRetriever):
     # For documentation and validation purposes
@@ -129,7 +133,8 @@ class GraphRAGRetriever(BaseRetriever):
     def retrieve(
             self, 
             prompt: Optional[str] = None, 
-            messages: Optional[List[Dict[str,str]]] = None
+            messages: Optional[List[Dict[str,str]]] = None,
+            **kwargs: Any
     ) -> List[Any]:
         """ Run retrieval logic """
         logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
@@ -148,7 +153,6 @@ class GraphRAGRetriever(BaseRetriever):
             emb_model=self.emb_model
         )
         return result
-
 
 class NaiveGraphRAGRetriever(BaseRetriever):
     # For documentation and validation purposes
@@ -182,7 +186,8 @@ class NaiveGraphRAGRetriever(BaseRetriever):
     def retrieve(
             self, 
             prompt: Optional[str] = None, 
-            messages: Optional[List[Dict[str,str]]] = None
+            messages: Optional[List[Dict[str,str]]] = None,
+            **kwargs: Any
     ) -> List[Any]:
         """ Run retrieval logic """
         logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
@@ -202,7 +207,6 @@ class NaiveGraphRAGRetriever(BaseRetriever):
         )
         return result
     
-
 class NaiveRAGRetriever(BaseRetriever):
     # For documentation and validation purposes
     name: ClassVar[RetrieverType] = RetrieverType.VECTOR
@@ -235,7 +239,8 @@ class NaiveRAGRetriever(BaseRetriever):
     def retrieve(
             self, 
             prompt: Optional[str] = None, 
-            messages: Optional[List[Dict[str,str]]] = None
+            messages: Optional[List[Dict[str,str]]] = None,
+            **kwargs: Any
     ) -> List[Any]:
         """ Run retrieval logic """
         logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
@@ -255,15 +260,154 @@ class NaiveRAGRetriever(BaseRetriever):
         )
         return result
     
+
+class VectorGRRetriever(BaseRetriever):
+    # For documentation and validation purposes 
+    name: ClassVar[RetrieverType] = RetrieverType.VECTORGR
+    config: VectorGRRetrieverConfig
+    parameter_schema: ClassVar[Dict[str, Any]] = {}
+
+    def __init__(
+            self,
+            parameter: Optional[Dict[str, Any]] = None, 
+            config: Optional[VectorGRRetrieverConfig] = None,
+            config_parser: ConfigParser = None,
+            documents: Optional[str] = None, 
+            graph_db: Optional[Union[DatabaseType, ArangoDBClient]] = None, 
+            vector_db: Optional[Union[DatabaseType, Elasticsearch]] = None, 
+            llm: Optional[LLMClient] = None, 
+            emb_model: Optional[SentenceTransformer] = None
+    ) -> None:
+        super().__init__(
+            parameter=parameter,
+            config=config,
+            cls_retriever_config=VectorGRRetrieverConfig,
+            documents=documents,
+            config_parser=config_parser,
+            graph_db=graph_db,
+            vector_db=vector_db,
+            llm=llm,
+            emb_model=emb_model
+        )
+
+    def retrieve(
+            self, 
+            prompt: Optional[str] = None, 
+            messages: Optional[List[Dict[str,str]]] = None,
+            **kwargs: Any
+    ) -> Any:
+        """ Run retrieval logic """
+        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
+        logger.info(f"USING THE FOLLOWING QUERY: '{prompt}'")
+        
+        # Retrieval
+        return _graphrag_retrieve(
+            prompt = prompt,
+            messages = messages,
+            config = self.config,
+            config_parser = self.config_parser,
+        )
+    
+class HybridGRRetriever(BaseRetriever):
+    # For documentation and validation purposes 
+    name: ClassVar[RetrieverType] = RetrieverType.HYBRIDGR
+    config: HybridGRRetrieverConfig
+    parameter_schema: ClassVar[Dict[str, Any]] = {}
+
+    def __init__(
+            self,
+            parameter: Optional[Dict[str, Any]] = None, 
+            config: Optional[HybridGRRetrieverConfig] = None,
+            config_parser: ConfigParser = None,
+            documents: Optional[str] = None, 
+            graph_db: Optional[Union[DatabaseType, ArangoDBClient]] = None, 
+            vector_db: Optional[Union[DatabaseType, Elasticsearch]] = None, 
+            llm: Optional[LLMClient] = None, 
+            emb_model: Optional[SentenceTransformer] = None
+    ) -> None:
+        super().__init__(
+            parameter=parameter,
+            config=config,
+            cls_retriever_config=HybridGRRetrieverConfig,
+            documents=documents,
+            config_parser=config_parser,
+            graph_db=graph_db,
+            vector_db=vector_db,
+            llm=llm,
+            emb_model=emb_model
+        )
+
+    def retrieve(
+            self, 
+            prompt: Optional[str] = None, 
+            messages: Optional[List[Dict[str,str]]] = None,
+            **kwargs: Any
+    ) -> Any:
+        """ Run retrieval logic """
+        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
+        logger.info(f"USING THE FOLLOWING QUERY: '{prompt}'")
+        
+        # Retrieval
+        return _graphrag_retrieve(
+            prompt = prompt,
+            messages = messages,
+            config = self.config,
+            config_parser = self.config_parser,
+        )
+    
+class Text2CypherRetriever(BaseRetriever):
+    # For documentation and validation purposes 
+    name: ClassVar[RetrieverType] = RetrieverType.TEXT2CYPHER
+    config: Text2CypherRetrieverConfig
+    parameter_schema: ClassVar[Dict[str, Any]] = {}
+
+    def __init__(
+            self,
+            parameter: Optional[Dict[str, Any]] = None, 
+            config: Optional[Text2CypherRetrieverConfig] = None,
+            config_parser: ConfigParser = None,
+            documents: Optional[str] = None, 
+            graph_db: Optional[Union[DatabaseType, ArangoDBClient]] = None, 
+            vector_db: Optional[Union[DatabaseType, Elasticsearch]] = None, 
+            llm: Optional[LLMClient] = None, 
+            emb_model: Optional[SentenceTransformer] = None
+    ) -> None:
+        super().__init__(
+            parameter=parameter,
+            config=config,
+            cls_retriever_config=Text2CypherRetrieverConfig,
+            documents=documents,
+            config_parser=config_parser,
+            graph_db=graph_db,
+            vector_db=vector_db,
+            llm=llm,
+            emb_model=emb_model
+        )
+
+    def retrieve(
+            self, 
+            prompt: Optional[str] = None, 
+            messages: Optional[List[Dict[str,str]]] = None,
+            **kwargs: Any
+    ) -> Any:
+        """ Run retrieval logic """
+        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
+        logger.info(f"USING THE FOLLOWING QUERY: '{prompt}'")
+        
+        # Retrieval
+        return _text2cypher_retrieve(
+            prompt = prompt,
+            messages = messages,
+            config = self.config,
+            config_parser = self.config_parser,
+        )
+    
     
 class TemplateRetriever(BaseRetriever):
     # For documentation and validation purposes 
     name: ClassVar[RetrieverType] = RetrieverType.TEMP
     config: TemplateRetrieverConfig
-    parameter_schema: ClassVar[Dict[str, Any]] = {
-        "top_k_nodes": int,
-        "similarity_metric": str
-    }
+    parameter_schema: ClassVar[Dict[str, Any]] = {}
 
     def __init__(
             self,

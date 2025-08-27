@@ -2,14 +2,19 @@ from .indexer import (
     GARAGIndexerConfig,
     GraphRAGIndexerConfig,
     NaiveGRIndexerConfig,
-    NaiveRAGIndexerConfig
+    NaiveRAGIndexerConfig,
+    VectorGRIndexerConfig,
+    HybridGRIndexerConfig
     # ADD MORE
 )
 from .retriever import (
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
     NaiveGRRetrieverConfig,
-    NaiveRAGRetrieverConfig
+    NaiveRAGRetrieverConfig,
+    VectorGRRetrieverConfig,
+    HybridGRRetrieverConfig,
+    Text2CypherRetrieverConfig
     # ADD MORE
 )
 
@@ -18,9 +23,14 @@ __all__ = [
     GraphRAGIndexerConfig,
     NaiveGRIndexerConfig,
     NaiveRAGIndexerConfig,
+    VectorGRIndexerConfig,
+    HybridGRIndexerConfig,
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
     NaiveGRRetrieverConfig,
-    NaiveRAGRetrieverConfig
+    NaiveRAGRetrieverConfig,
+    VectorGRRetrieverConfig,
+    HybridGRRetrieverConfig,
+    Text2CypherRetrieverConfig
     # ADD MORE
 ] 

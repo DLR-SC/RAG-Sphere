@@ -10,6 +10,7 @@ from dataclasses import (
 from typing import (
     ClassVar,
     Dict,
+    List,
     Any
 )
 
@@ -53,6 +54,27 @@ class NaiveRAGIndexerConfig(BaseIndexerConfig):
     def update(self, **kwargs):
         return replace(self, **kwargs)
 
+@dataclass
+class VectorGRIndexerConfig(BaseIndexerConfig):
+    name: ClassVar[IndexerType] = IndexerType.VECTORGR
+    similarity_fn: str = "cosine"
+    v_index_name: str = "vector_index_all"
+
+    def update(self, **kwargs):
+        return replace(self, **kwargs)
+
+@dataclass
+class HybridGRIndexerConfig(BaseIndexerConfig):
+    name: ClassVar[IndexerType] = IndexerType.HYBRIDGR
+    similarity_fn: str = "cosine"
+    f_index_name: str = "ft_index_all"
+    v_index_name: str = "vector_index_all"
+    target_nodes: List[str] | None = None          # Using only properties from target nodes to create the fulltext index e.g. ["Procedure", "Command", "Event"]
+    property_limit: int = 40                       # max. 80 with a short query
+    
+    def update(self, **kwargs):
+        return replace(self, **kwargs)
+    
 @dataclass
 class TemplateIndexerConfig(BaseIndexerConfig):
     name: ClassVar[IndexerType] = IndexerType.TEMP
