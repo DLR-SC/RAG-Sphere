@@ -2,6 +2,7 @@
 fastapi[standard]
 
 # RAG
+neo4j-graphrag
 psycopg2-binary
 graspologic
 
