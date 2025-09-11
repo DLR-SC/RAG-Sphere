@@ -16,6 +16,9 @@ from typing import (
 from ollama import Client
 from openai import OpenAI
 
+import logging
+logger = logging.getLogger(__name__)
+
 import requests
 import json
 from hashlib import sha256
@@ -187,6 +190,9 @@ class LLMClient:
         
         elif self.provider=='openai':
             chat = self.create_chat(system_prompt=system, user_prompt=prompt)
+
+            if format is not None:
+                logger.warning("JSon Formats are not yet supported for openai providers. This method might return unexpected results!")
 
             if options is None:
                 options = {}
