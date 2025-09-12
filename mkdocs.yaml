@@ -172,6 +172,8 @@ nav:
     - GraphRAG Variant ◈: techniques/GraphRAG.md
     - LightRAG ◈: techniques/LightRAG.md
     - PathRAG ◈: techniques/PathRAG.md
+    - GARAG ◈: techniques/GARAG.md
+    - Naive GraphRAG ◈: techniques/NaiveGraphRAG.md
   - Insights:
     - Overview 💡: insights/index.md
     - Technique Comparison ⚖️: insights/comparison.md
