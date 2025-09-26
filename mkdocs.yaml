@@ -192,6 +192,9 @@ nav:
       - GNN-RAG: ""
       - GraphRAG: ""
       - Microsoft GraphRAG: ""
+  - ERI:
+    - Overview: eri/index.md
+    - Configuration: eri/config.md
   - References:
     - Techniques: references/techniques.md
     - Data: references/data.md

@@ -1,3 +1,4 @@
+from typing import Optional
 from arango import ArangoClient
 from arango.collection import VertexCollection, EdgeCollection
 from arango.exceptions import GraphListError, GraphPropertiesError, ServerStatusError
@@ -7,13 +8,21 @@ import logging
 logger = logging.getLogger(__name__)
 
 class ArangoDBClient:
-    def __init__(self, config : ConfigParser, db_name : str = "", graph_name : str = "", client_name : str = "ArangoDBClient"):
+    def __init__(self, 
+        config : ConfigParser, 
+        url : Optional[str] = None, 
+        username : Optional[str] = None,
+        password : Optional[str] = None,
+        db_name : Optional[str] = None, 
+        graph_name : Optional[str] = None, 
+        client_name : str = "ArangoDBClient"
+        ):
         """
         Opens a connection to a Specific arangoDB graph.
 
         Parameters:
         - config (ConfigParser) : The config parser, containing all necessary information. 
-            The following information will be extracted:
+            The following information will be extracted, if not provided explicitly:
             - arangodb/url : The url to the ArangoDB client
             - arangodb/username : The name of the user, used for the connection
             - arangodb/password : The password for the user, used for the connection. If empty, a password will be requested via user input on the console.
@@ -25,15 +34,15 @@ class ArangoDBClient:
         """
 
         # Reads information about the ArangoDB client
-        self.client = ArangoClient(hosts = config.get("arangodb", "url"))
+        self.client = ArangoClient(hosts = url if url is not None else config.get("arangodb", "url"))
 
         # Reads information about the graph
-        self.db_name = db_name if db_name else None
-        self.graph_name = graph_name if graph_name else None
+        self.db_name = db_name if db_name is not None else config.get("arangodb", "db_name")
+        self.graph_name = graph_name if graph_name is not None else config.get("arangodb", "graph_name")
 
         # Rads information about the user. The password might be requested, if not present in config
-        username = config.get("arangodb", "username")
-        password = pw if (pw := config.get("arangodb", "password")) != "None" else getpass(prompt = f"{client_name} requests ArangoDB password ({username}): ")
+        username = username if username is not None else config.get("arangodb", "username")
+        password = password if password is not None else pw if (pw := config.get("arangodb", "password")) != "None" else getpass(prompt = f"{client_name} requests ArangoDB password ({username}): ")
 
         # Connects to the graph on the ArangoDB client    
         self.db = self.client.db(self.db_name, username = username, password = password)

@@ -40,7 +40,7 @@ from protocols.retriever import (
 from models.retriever import (
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
-    NaiveGRRetrieverConfig,
+    NaiveRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
     VectorGRRetrieverConfig,
     HybridGRRetrieverConfig,
@@ -169,7 +169,7 @@ class QueryEngine:
             case RetrieverType.GARAG:
                 return GARAGRetrieverConfig
             case RetrieverType.NAIVEGR:
-                return NaiveGRRetrieverConfig
+                return NaiveRAGRetrieverConfig
             case RetrieverType.GRAPHRAG:
                 return GraphRAGRetrieverConfig
             case RetrieverType.VECTOR:

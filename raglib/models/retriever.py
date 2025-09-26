@@ -29,7 +29,8 @@ class GARAGRetrieverConfig(BaseRetrieverConfig):
     name: ClassVar[RetrieverType] = RetrieverType.GARAG
     top_k: int = 1024                               # The maximum number of matching information to return
     similarity_metric: str = "cosine"                 
-    confidence_cutoff: float = 0.04             
+    confidence_cutoff: float = 0.04
+    vector_db_index_name: str = ""
 
     def update(self, **kwargs):
         return replace(self, **kwargs)
@@ -46,11 +47,12 @@ class GraphRAGRetrieverConfig(BaseRetrieverConfig):
         return replace(self, **kwargs)
 
 @dataclass
-class NaiveGRRetrieverConfig(BaseRetrieverConfig):
+class NaiveRAGRetrieverConfig(BaseRetrieverConfig):
     name: ClassVar[RetrieverType] = RetrieverType.NAIVEGR
     top_k: int = 1024                               # The maximum number of matching information to return
     confidence_cutoff: float = 0.04                 # Community selection confidence cutoff
     similarity_fn: str = "cosine" 
+    vector_db_index_name: str = ""
 
     def update(self, **kwargs):
         return replace(self, **kwargs)
@@ -61,6 +63,7 @@ class NaiveRAGRetrieverConfig(BaseRetrieverConfig):
     top_k: int = 1024                               # The maximum number of matching information to return
     confidence_cutoff: float = 0.04                 # Text chunk selection confidence cutoff
     similarity_fn: str = "cosine"
+    vector_db_index_name: str = ""
 
     def update(self, **kwargs):
         return replace(self, **kwargs)
@@ -93,7 +96,8 @@ class HybridGRRetrieverConfig(BaseRetrieverConfig):
     
 @dataclass
 class Text2CypherRetrieverConfig(BaseRetrieverConfig):
-    name: ClassVar[RetrieverType] = RetrieverType.TEXT2CYPHER         
+    name: ClassVar[RetrieverType] = RetrieverType.TEXT2CYPHER 
+    top_k: int = 0                              # Unused in this retriever; Needed to be ERI complient        
     # Optional user input/query pairs for the LLM to use as examples.
     examples: List[str] = field(default_factory=lambda: ["USER INPUT: 'Which actors starred in the Matrix?' QUERY: MATCH (p:Person)-[:ACTED_IN]->(m:Movie) WHERE m.title = 'The Matrix' RETURN p.name"])
     

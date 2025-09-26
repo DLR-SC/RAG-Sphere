@@ -1,5 +1,6 @@
 from typing import (
     Tuple,
+    Set,
     Dict,
     List,
     Any,
@@ -190,7 +191,7 @@ class GenerationAPI:
         # Add a progressbar, is show_progress is True
         pbar = tqdm(total = len(informations), desc="Generating llm information") if show_progress else None
 
-        def generate_community_information(information, source, document) -> Tuple[int, str, {str}, {str}]:
+        def generate_community_information(information, source, document) -> Tuple[int, str, Set[str], Set[str]]:
             """
             A private function to extract information from a given information block
 
