@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from enum import Enum
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 class AuthorizationMethods(Enum):
     NONE = "NONE"
@@ -19,6 +19,11 @@ class Roles(Enum):
     USER = "USER"
     AI = "AI"
     AGENT = "AGENT"
+
+class ProviderType(Enum):
+    NONE = "NONE"
+    ANY = "ANY"
+    SELF_HOSTED = "SELF_HOSTED"
 
 class AuthHeader(BaseModel):
     token: str
@@ -41,7 +46,7 @@ class RetrievalRequest(BaseModel):
     latestUserPromptType: AllowedTypes
     thread: ContentBlocks
     retrievalProcessId: Optional[str]
-    parameters: Optional[Dict[str, int]]
+    parameters: Optional[Dict[str, str]]
     maxMatches: int
 
 class RetrievalAnswer(BaseModel):

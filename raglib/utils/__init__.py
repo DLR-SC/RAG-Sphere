@@ -4,8 +4,8 @@ from .arango_client import (
 from .llm_client import (
     LLMClient
 )
-from .db_connection import (
-    DatabaseConnection
+from .postgres_client import (
+    PostgresDBClient
 )
 from .tokenizer import (
     OpenAITokenizerWrapper
@@ -14,6 +14,6 @@ from .tokenizer import (
 __all__ = [
     ArangoDBClient,
     LLMClient,
-    DatabaseConnection,
+    PostgresDBClient,
     OpenAITokenizerWrapper
 ] 

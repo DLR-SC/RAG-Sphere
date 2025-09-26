@@ -21,4 +21,4 @@ Vector RAG is a lightweight Retrieval-Augmented Generation (RAG) system that lev
 
 1. **Very efficient indexing and query**: By relying solely on embeddings for retrieval, this system enjoys fast indexing and query processing times.
 
-1. **Great Baseling**: The simplicity of this algorithm makes it an ideal baseline for comparing various retrieval methods, providing a reliable starting point for evaluating the effectiveness of more complex approaches.
+1. **Great Baseline**: The simplicity of this algorithm makes it an ideal baseline for comparing various retrieval methods, providing a reliable starting point for evaluating the effectiveness of more complex approaches.

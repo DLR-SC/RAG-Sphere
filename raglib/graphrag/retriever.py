@@ -32,7 +32,7 @@ from models.enums import (
 from models.retriever import (
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
-    NaiveGRRetrieverConfig,
+    NaiveRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
     VectorGRRetrieverConfig,
     HybridGRRetrieverConfig,
@@ -45,7 +45,7 @@ from protocols.retriever import (
 )
 
 from eri_components.components import RetrievalAnswer, AllowedTypes
-from graphrag.query.generation_api import GenerationAPI
+from graphrag.query.graphRAG_retriever import _graph_rag_retrieve, _garag_retrieve, _naive_graph_rag_retrieve, _naive_rag_retrieve
 from graphrag.query.neo4j_retriever import _graphrag_retrieve, _text2cypher_retrieve
 
 class GARAGRetriever(BaseRetriever):
@@ -84,20 +84,19 @@ class GARAGRetriever(BaseRetriever):
             **kwargs: Any
     ) -> List[Any]:
         """ Run retrieval logic """
-        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
+        config = self.config.update(**kwargs)
+        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {config}")
         logger.info(f"USING THE FOLLOWING QUERY: '{prompt}'")
 
         # Retrieval
-        result = _retrieve(
-            config=self.config,
-            config_parser=self.config_parser,
-            prompt=prompt, 
-            messages=messages,
-            documents=self.documents, 
-            graph_db=self.graph_db, 
-            vector_db=self.vector_db, 
-            llm=self.llm, 
-            emb_model=self.emb_model
+        result = _garag_retrieve(
+            prompt=prompt,
+            graph_db=self.graph_db,
+            vector_db=self.vector_db,
+            vector_db_index_name=config.vector_db_index_name,
+            emb_model=self.emb_model,
+            max_matches=config.top_k,
+            confidence_cutoff=config.confidence_cutoff,
         )
         return result
 
@@ -137,33 +136,31 @@ class GraphRAGRetriever(BaseRetriever):
             **kwargs: Any
     ) -> List[Any]:
         """ Run retrieval logic """
-        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
+        config = self.config.update(**kwargs)
+        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {config}")
         logger.info(f"USING THE FOLLOWING QUERY: '{prompt}'")
         
         # Retrieval
-        result = _retrieve(
-            config=self.config,
-            config_parser=self.config_parser,
-            prompt=prompt, 
-            messages=messages,
-            documents=self.documents, 
-            graph_db=self.graph_db, 
-            vector_db=self.vector_db, 
-            llm=self.llm, 
-            emb_model=self.emb_model
+        result = _graph_rag_retrieve(
+            prompt=prompt,
+            llm=self.llm,
+            graph_db=self.graph_db,
+            max_matches=config.top_k,
+            community_degree=config.community_degree,
+            confidence_cutoff=config.confidence_cutoff
         )
         return result
 
 class NaiveGraphRAGRetriever(BaseRetriever):
     # For documentation and validation purposes
     name: ClassVar[RetrieverType] = RetrieverType.NAIVEGR
-    config: NaiveGRRetrieverConfig
+    config: NaiveRAGRetrieverConfig
     parameter_schema: ClassVar[Dict[str, Any]] = {}
 
     def __init__(
             self,
             parameter: Optional[Dict[str, Any]] = None, 
-            config: Optional[NaiveGRRetrieverConfig] = None,
+            config: Optional[NaiveRAGRetrieverConfig] = None,
             config_parser: ConfigParser = None,
             documents: Optional[str] = None, 
             graph_db: Optional[Union[DatabaseType, ArangoDBClient]] = None, 
@@ -174,7 +171,7 @@ class NaiveGraphRAGRetriever(BaseRetriever):
         super().__init__(
             parameter=parameter,
             config=config,
-            cls_retriever_config=NaiveGRRetrieverConfig,
+            cls_retriever_config=NaiveRAGRetrieverConfig,
             documents=documents,
             config_parser=config_parser,
             graph_db=graph_db,
@@ -190,20 +187,18 @@ class NaiveGraphRAGRetriever(BaseRetriever):
             **kwargs: Any
     ) -> List[Any]:
         """ Run retrieval logic """
-        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
+        config = self.config.update(**kwargs)
+        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {config}")
         logger.info(f"USING THE FOLLOWING QUERY: '{prompt}'")
         
         # Retrieval
-        result = _retrieve(
-            config=self.config,
-            config_parser=self.config_parser,
-            prompt=prompt, 
-            messages=messages,
-            documents=self.documents, 
-            graph_db=self.graph_db, 
-            vector_db=self.vector_db, 
-            llm=self.llm, 
-            emb_model=self.emb_model
+        result = _naive_graph_rag_retrieve(
+            prompt=prompt,
+            vector_db=self.vector_db,
+            vector_db_index_name=config.vector_db_index_name,
+            emb_model=self.emb_model,
+            max_matches=config.top_k,
+            confidence_cutoff=config.confidence_cutoff
         )
         return result
     
@@ -243,20 +238,18 @@ class NaiveRAGRetriever(BaseRetriever):
             **kwargs: Any
     ) -> List[Any]:
         """ Run retrieval logic """
-        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
+        config = self.config.update(**kwargs)
+        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {config}")
         logger.info(f"USING THE FOLLOWING QUERY: '{prompt}'")
         
         # Retrieval
-        result = _retrieve(
-            config=self.config,
-            config_parser=self.config_parser,
-            prompt=prompt, 
-            messages=messages,
-            documents=self.documents, 
-            graph_db=self.graph_db, 
-            vector_db=self.vector_db, 
-            llm=self.llm, 
-            emb_model=self.emb_model
+        result = _naive_rag_retrieve(
+            prompt=prompt,
+            vector_db=self.vector_db,
+            vector_db_index_name=config.vector_db_index_name,
+            emb_model=self.emb_model,
+            max_matches=config.get("top_k") or self.config.top_k,
+            confidence_cutoff=config.confidence_cutoff
         )
         return result
     
@@ -297,14 +290,15 @@ class VectorGRRetriever(BaseRetriever):
             **kwargs: Any
     ) -> Any:
         """ Run retrieval logic """
-        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
+        config = self.config.update(**kwargs)
+        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {config}")
         logger.info(f"USING THE FOLLOWING QUERY: '{prompt}'")
         
         # Retrieval
         return _graphrag_retrieve(
             prompt = prompt,
             messages = messages,
-            config = self.config,
+            config = config,
             config_parser = self.config_parser,
         )
     
@@ -344,14 +338,15 @@ class HybridGRRetriever(BaseRetriever):
             **kwargs: Any
     ) -> Any:
         """ Run retrieval logic """
-        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
+        config = self.config.update(**kwargs)
+        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {config}")
         logger.info(f"USING THE FOLLOWING QUERY: '{prompt}'")
         
         # Retrieval
         return _graphrag_retrieve(
             prompt = prompt,
             messages = messages,
-            config = self.config,
+            config = config,
             config_parser = self.config_parser,
         )
     
@@ -391,14 +386,15 @@ class Text2CypherRetriever(BaseRetriever):
             **kwargs: Any
     ) -> Any:
         """ Run retrieval logic """
-        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {self.config}")
+        config = self.config.update(**kwargs)
+        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {config}")
         logger.info(f"USING THE FOLLOWING QUERY: '{prompt}'")
         
         # Retrieval
         return _text2cypher_retrieve(
             prompt = prompt,
             messages = messages,
-            config = self.config,
+            config = config,
             config_parser = self.config_parser,
         )
     
@@ -438,68 +434,3 @@ class TemplateRetriever(BaseRetriever):
             messages: Optional[List[Dict[str,str]]] = None
     ) -> List[Any]:
         pass
-    
-    
-def _retrieve(
-        config: BaseRetrieverConfig,
-        config_parser: ConfigParser,
-        prompt: Optional[str] = None, 
-        messages: Optional[List[Dict[str,str]]] = None,
-        documents: Optional[str] = None, 
-        graph_db: Optional[Union[DatabaseType, ArangoDBClient]] = None, 
-        vector_db: Optional[Union[DatabaseType, Elasticsearch]] = None, 
-        llm: Optional[LLMClient] = None, 
-        emb_model: Optional[SentenceTransformer] = None,
-) -> List[RetrievalAnswer]:
-    query_api = GenerationAPI(config=config,
-                              config_parser=config_parser,
-                              documents=documents,
-                              graph_db=graph_db,
-                              vector_db=vector_db,
-                              llm=llm,
-                              emb_model=emb_model)
-    
-    # Create answer after the ERI format
-    answer = {
-        "name": "Knowledge Graph",
-        "category": "extracted data from multiple different files (sources)",
-        "path": "",
-        "type": AllowedTypes.NONE,
-        "matchedContent":  "",
-        "surroundingContent": [],
-        "links": []
-    }
-
-    # Extract and apply the retrieval method
-    match config.name:
-        case RetrieverType.GARAG:
-            results = query_api.generate_garag_answer(prompt=prompt, 
-                                                      max_matches=config.top_k,
-                                                      confidence_cutoff=config.confidence_cutoff)
-        case RetrieverType.NAIVEGR:
-            results = query_api.generate_graph_rag_rag_answer(prompt=prompt, 
-                                                             max_matches=config.top_k,
-                                                             confidence_cutoff=config.confidence_cutoff)
-        case RetrieverType.GRAPHRAG:
-            results = query_api.generate_graph_rag_answer(prompt=prompt, 
-                                                         max_matches=config.top_k, 
-                                                         community_degree=config.community_degree,
-                                                         confidence_cutoff=config.confidence_cutoff)
-        case RetrieverType.VECTOR:
-            results = query_api.generate_rag_answer(prompt=prompt, 
-                                                   max_matches=config.top_k,
-                                                   confidence_cutoff=config.confidence_cutoff)
-    
-    # Convert the results into a list of RetrievalAnswers (ERI format):
-    answer["type"] = AllowedTypes.TEXT
-    answers = []
-    for result in results:
-        answer["matchedContent"] = result["content"]
-        answer["name"] = str(result["source"])
-        answer["path"] = str(result["document"])
-        answers.append(RetrievalAnswer(**answer))
-    if(len(answers) == 0):
-        return [RetrievalAnswer(**answer)]
-    
-    logger.debug(str(answers))
-    return answers

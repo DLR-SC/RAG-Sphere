@@ -16,6 +16,7 @@ sentence-transformers
 langchain_ollama
 ollama
 openai
+tiktoken
 
 # Documentation Page
 mkdocs-material

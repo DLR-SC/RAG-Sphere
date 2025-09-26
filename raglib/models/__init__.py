@@ -10,7 +10,7 @@ from .indexer import (
 from .retriever import (
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
-    NaiveGRRetrieverConfig,
+    NaiveRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
     VectorGRRetrieverConfig,
     HybridGRRetrieverConfig,
@@ -27,7 +27,7 @@ __all__ = [
     HybridGRIndexerConfig,
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
-    NaiveGRRetrieverConfig,
+    NaiveRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
     VectorGRRetrieverConfig,
     HybridGRRetrieverConfig,
