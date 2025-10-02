@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./docs/illustrations/logo__2_.png" alt="RAGLib Logo" width="500">
+<img src="./docs/illustrations/logo__2_.png" alt="RAGLib Logo" width="300">
 
 
 ## A Unified Library of Retrieval-Augmented Generation Techniques with Implementations, Comparisons, and a Practical Selection Guide
