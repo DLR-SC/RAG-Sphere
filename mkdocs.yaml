@@ -1,13 +1,13 @@
 # Project information
-site_name: RAGLib
+site_name: RAGsphere
 site_author: Onur Koc
-site_description: RAGLib page description ..
-site_url: https://dlr.rag-lib.de
+site_description: RAGsphere page description ..
+site_url: https://dlr.rag-spehere.de
 docs_dir: 'docs'
 site_dir: public
 
 # Repository
-repo_name: ivs-iss/ragLib
+repo_name: ivs-iss/RAGsphere
 repo_url: https://gitlab.dlr.de/dlr-fm/framework/rag_lib
 #edit_uri: 
 #copyright:

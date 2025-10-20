@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Header, Request, HTTPException, status
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta
 from configparser import ConfigParser
 from typing import Annotated, List
@@ -392,9 +394,27 @@ else:
     app = FastAPI()
 
 
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://orbait.intra.dlr.de",  # your frontend domain
+        "http://localhost:3000",       # (optional) local dev frontend
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],               # allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],               # allow all headers
+)
 
 ## HTTP Methods
-
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+        headers=exc.headers or {}
+    )
+    
 @app.get("/auth/methods", status_code = 200)
 def get_auth_methods():
     """
@@ -579,9 +599,10 @@ def retrieve(retrieval_request: RetrievalRequest, token_header: Annotated[AuthHe
     try:
         # Fetch retrieval result
         result = retrieval_methods[retrieval_request.retrievalProcessId].retrieve(
-            prompt=retrieval_request.latestUserPrompt,
+            prompt=str(retrieval_request.latestUserPrompt),
             **parameters
         )
+
 
         # If result is not in form List[RetrievalAnswer], the format has to be modified manually
         ## EXTEND SUPPORTED METHODS HERE
@@ -591,8 +612,8 @@ def retrieve(retrieval_request: RetrievalRequest, token_header: Annotated[AuthHe
                     name="Knowledge Graph Retrieval",
                     category="Extracted data from multiple different sources",
                     path="",
-                    type=AllowedTypes.NONE,
-                    matchedContent=match.__repr__(),
+                    type=AllowedTypes.TEXT,
+                    matchedContent=match.content,   #match.__repr__(), match.content
                     surroundingContent=[],
                     links=[]
                 ) for match in result["retriever_result"]

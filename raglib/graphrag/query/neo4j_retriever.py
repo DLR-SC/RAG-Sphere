@@ -16,9 +16,13 @@ from models.enums import (
 from neo4j import GraphDatabase
 from neo4j_graphrag.embeddings import SentenceTransformerEmbeddings
 from neo4j_graphrag.llm import OllamaLLM
-from neo4j_graphrag.retrievers import VectorRetriever
-from neo4j_graphrag.retrievers import HybridRetriever
-from neo4j_graphrag.retrievers import Text2CypherRetriever
+from neo4j_graphrag.retrievers import (
+    VectorRetriever, 
+    VectorCypherRetriever,
+    HybridRetriever,
+    HybridCypherRetriever,
+    Text2CypherRetriever,
+)
 from neo4j_graphrag.schema import get_structured_schema, format_schema
 from neo4j_graphrag.generation import GraphRAG
 
@@ -36,6 +40,7 @@ def _graphrag_retrieve(
         messages: List[Dict[str,str]],
         config: BaseIndexerConfig,
         config_parser: ConfigParser = None,
+        retrieval_query: str = "MATCH (node)-[:AUTHORED_BY]->(author:Author)" "RETURN author.name",
         **kwargs: Any
 ) -> Any:
     # DB Connection
@@ -67,7 +72,7 @@ def _graphrag_retrieve(
     embedder = SentenceTransformerEmbeddings(model = EMBEDDER)
         
     # When performing a similarity search, one may have constraints to apply. For instance, filtering out movies released before 2000. This can be achieved using filters.
-    if config.name==RetrieverType.VECTORGR:
+    if config.name==RetrieverType.VECTORGR or config.name==RetrieverType.VECTORGR: #cypher
         filters = config.filters
 
     # Initialize the retriever
@@ -86,7 +91,21 @@ def _graphrag_retrieve(
                 "top_k": config.top_k,
                 "filters": config.filters 
                 } 
-        case RetrieverType.HYBRIDGR:
+        case RetrieverType.VECTORCYPHERGR: # Add result formatter
+            V_INDEX_NAME = config.v_index_name
+            retrieval_query = retrieval_query
+            retriever = VectorCypherRetriever(
+                driver=driver,
+                index_name=V_INDEX_NAME,
+                retrieval_query = retrieval_query,
+                embedder=embedder,
+                neo4j_database=DB_NAME
+            )
+            retriever_config = { # Add query_params
+                "top_k": config.top_k,
+                "filters": config.filters 
+                } 
+        case RetrieverType.HYBRIDGR: # Add ranker and alpha support
             V_INDEX_NAME = config.v_index_name
             F_INDEX_NAME = config.f_index_name
             return_properties = config.return_properties
@@ -99,6 +118,20 @@ def _graphrag_retrieve(
                 neo4j_database=DB_NAME
             )
             retriever_config = { "top_k": config.top_k }
+        case RetrieverType.HYBRIDCYPHERGR: # Add result formatter
+            V_INDEX_NAME = config.v_index_name
+            F_INDEX_NAME = config.f_index_name
+            retriever = HybridCypherRetriever(
+                driver=driver,
+                vector_index_name=V_INDEX_NAME,
+                fulltext_index_name=F_INDEX_NAME,
+                retrieval_query = retrieval_query,
+                embedder=embedder,
+                neo4j_database=DB_NAME
+            )
+            retriever_config = { 
+                "top_k": config.top_k 
+            } # Add query_params
 
     # Initialize the RAG pipeline
     rag = GraphRAG(
@@ -167,8 +200,9 @@ def _text2cypher_retrieve(
     BASE_URL = config_parser.get("llm_query", "base_url")
     MODEL_NAME = config_parser.get("llm_query", "model_name")
     LLM_OPTIONS_STR = config_parser.get("llm_query", "options")
+    print(LLM_OPTIONS_STR)
     LLM_OPTIONS = json.loads(LLM_OPTIONS_STR)
-    
+
     llm = OllamaLLM(
         model_name=MODEL_NAME,
         model_params={"options": LLM_OPTIONS},

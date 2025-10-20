@@ -43,7 +43,9 @@ from models.retriever import (
     NaiveRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
     VectorGRRetrieverConfig,
+    VectorCypherGRRetrieverConfig,
     HybridGRRetrieverConfig,
+    HybridCypherGRRetrieverConfig,
     Text2CypherRetrieverConfig
 )
 from graphrag.retriever import (
@@ -52,7 +54,9 @@ from graphrag.retriever import (
     GARAGRetriever,
     NaiveRAGRetriever,
     VectorGRRetriever,
+    VectorCypherGRRetriever,
     HybridGRRetriever,
+    HybridCypherGRRetriever,
     Text2CypherRetriever,
     TemplateRetriever
 )
@@ -156,8 +160,12 @@ class QueryEngine:
                 return NaiveRAGRetriever(**class_args)
             case RetrieverType.VECTORGR:
                 return VectorGRRetriever(**class_args)
+            case RetrieverType.VECTORCYPHERGR:
+                return VectorCypherGRRetriever(**class_args)
             case RetrieverType.HYBRIDGR:
                 return HybridGRRetriever(**class_args)
+            case RetrieverType.HYBRIDCYPHERGR:
+                return HybridCypherGRRetriever(**class_args)
             case RetrieverType.TEXT2CYPHER:
                 return Text2CypherRetriever(**class_args)
             case _:
@@ -176,8 +184,12 @@ class QueryEngine:
                 return NaiveRAGRetrieverConfig
             case RetrieverType.VECTORGR:
                 return VectorGRRetrieverConfig
+            case RetrieverType.VECTORCYPHERGR:
+                return VectorCypherGRRetrieverConfig
             case RetrieverType.HYBRIDGR:
                 return HybridGRRetrieverConfig
+            case RetrieverType.HYBRIDCYPHERGR:
+                return HybridCypherGRRetrieverConfig
             case RetrieverType.TEXT2CYPHER:
                 return Text2CypherRetrieverConfig
             case _:
@@ -187,7 +199,8 @@ class QueryEngine:
             self, 
             prompt: Optional[str] = None, 
             messages: Optional[List[Dict[str,str]]] = None,
+            retrieval_query: Optional[str] = None,
             **kwargs: Any
     ) -> Any:
         #prompt_build = self.prompt_builder.build(prompt, retrieved_docs) #ToDO
-        return self.retriever.retrieve(prompt=prompt, messages=messages, **kwargs)
+        return self.retriever.retrieve(prompt=prompt, messages=messages, retrieval_query=retrieval_query, **kwargs)
