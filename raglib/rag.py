@@ -268,6 +268,7 @@ class RAG(BaseRAG):
             self, 
             prompt: Optional[str] = None, 
             messages: Optional[List[Dict[str,str]]] = None,
+            retrieval_query: Optional[str] = None,
             verbosity: Optional[int] = 1,
             **kwargs: Any
     ) -> Any:
@@ -276,7 +277,7 @@ class RAG(BaseRAG):
         if self.retriever is None:
             logger.warning("No retrieval technique has been specified.")
         else:
-            return self.query_engine.query(prompt, messages, **kwargs)
+            return self.query_engine.query(prompt, messages, retrieval_query=retrieval_query, **kwargs)
 
     def _get_llm(
             self, 

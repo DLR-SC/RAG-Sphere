@@ -29,7 +29,9 @@ class RetrieverType(str, Enum):
     GRAPHRAG = "graphrag"
     VECTOR = "naiverag"
     VECTORGR = "vectorgraphrag"
+    VECTORCYPHERGR = "vectorcyphergraphrag"
     HYBRIDGR = "hybridgraphrag"
+    HYBRIDCYPHERGR = "hybridcyphergraphrag"
     TEXT2CYPHER = "text2cypher"
     TEMP = "template"
 
@@ -62,10 +64,13 @@ SUPPORTED_COMBINATIONS: List[Tuple[IndexerType, RetrieverType]] = [
     (IndexerType.NAIVEGR, RetrieverType.VECTOR),
     (IndexerType.VECTOR, RetrieverType.VECTOR),
     (IndexerType.VECTORGR, RetrieverType.VECTORGR),
+    (IndexerType.VECTORGR, RetrieverType.VECTORCYPHERGR),
     (IndexerType.VECTORGR, None),
     (IndexerType.HYBRIDGR, RetrieverType.HYBRIDGR),
+    (IndexerType.HYBRIDGR, RetrieverType.HYBRIDCYPHERGR),
     (IndexerType.HYBRIDGR, RetrieverType.VECTORGR),
+    (IndexerType.HYBRIDGR, RetrieverType.VECTORCYPHERGR),
     (IndexerType.HYBRIDGR, None),
-    (None, RetrieverType.TEXT2CYPHER)
+    (None, RetrieverType.TEXT2CYPHER),
     # ADD MORE
 ]

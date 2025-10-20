@@ -301,6 +301,56 @@ class VectorGRRetriever(BaseRetriever):
             config = config,
             config_parser = self.config_parser,
         )
+        
+class VectorCypherGRRetriever(BaseRetriever):
+    # For documentation and validation purposes 
+    name: ClassVar[RetrieverType] = RetrieverType.VECTORGR
+    config: VectorGRRetrieverConfig
+    parameter_schema: ClassVar[Dict[str, Any]] = {}
+
+    def __init__(
+            self,
+            parameter: Optional[Dict[str, Any]] = None, 
+            config: Optional[VectorGRRetrieverConfig] = None,
+            config_parser: ConfigParser = None,
+            documents: Optional[str] = None, 
+            graph_db: Optional[Union[DatabaseType, ArangoDBClient]] = None, 
+            vector_db: Optional[Union[DatabaseType, Elasticsearch]] = None, 
+            llm: Optional[LLMClient] = None, 
+            emb_model: Optional[SentenceTransformer] = None
+    ) -> None:
+        super().__init__(
+            parameter=parameter,
+            config=config,
+            cls_retriever_config=VectorGRRetrieverConfig,
+            documents=documents,
+            config_parser=config_parser,
+            graph_db=graph_db,
+            vector_db=vector_db,
+            llm=llm,
+            emb_model=emb_model
+        )
+
+    def retrieve(
+            self, 
+            prompt: Optional[str] = None, 
+            retrieval_query: Optional[str] = None,
+            messages: Optional[List[Dict[str,str]]] = None,
+            **kwargs: Any
+    ) -> Any:
+        """ Run retrieval logic """
+        config = self.config.update(**kwargs)
+        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {config}")
+        logger.info(f"USING THE FOLLOWING QUERY: '{prompt}'")
+        
+        # Retrieval
+        return _graphrag_retrieve(
+            prompt = prompt,
+            messages = messages,
+            retrieval_query = retrieval_query,
+            config = config,
+            config_parser = self.config_parser,
+        )
     
 class HybridGRRetriever(BaseRetriever):
     # For documentation and validation purposes 
@@ -349,6 +399,58 @@ class HybridGRRetriever(BaseRetriever):
             config = config,
             config_parser = self.config_parser,
         )
+    
+
+class HybridCypherGRRetriever(BaseRetriever):
+    # For documentation and validation purposes 
+    name: ClassVar[RetrieverType] = RetrieverType.HYBRIDGR
+    config: HybridGRRetrieverConfig
+    parameter_schema: ClassVar[Dict[str, Any]] = {}
+
+    def __init__(
+            self,
+            parameter: Optional[Dict[str, Any]] = None, 
+            config: Optional[HybridGRRetrieverConfig] = None,
+            config_parser: ConfigParser = None,
+            documents: Optional[str] = None, 
+            graph_db: Optional[Union[DatabaseType, ArangoDBClient]] = None, 
+            vector_db: Optional[Union[DatabaseType, Elasticsearch]] = None, 
+            llm: Optional[LLMClient] = None, 
+            emb_model: Optional[SentenceTransformer] = None
+    ) -> None:
+        super().__init__(
+            parameter=parameter,
+            config=config,
+            cls_retriever_config=HybridGRRetrieverConfig,
+            documents=documents,
+            config_parser=config_parser,
+            graph_db=graph_db,
+            vector_db=vector_db,
+            llm=llm,
+            emb_model=emb_model
+        )
+
+    def retrieve(
+            self, 
+            prompt: Optional[str] = None, 
+            retrieval_query: Optional[str] = None,
+            messages: Optional[List[Dict[str,str]]] = None,
+            **kwargs: Any
+    ) -> Any:
+        """ Run retrieval logic """
+        config = self.config.update(**kwargs)
+        logger.info(f"DOING '{self.name.value}' RETRIEVAL WITH {config}")
+        logger.info(f"USING THE FOLLOWING QUERY: '{prompt}'")
+        
+        # Retrieval
+        return _graphrag_retrieve(
+            prompt = prompt,
+            messages = messages,
+            retrieval_query = retrieval_query,
+            config = config,
+            config_parser = self.config_parser,
+        )
+
     
 class Text2CypherRetriever(BaseRetriever):
     # For documentation and validation purposes 

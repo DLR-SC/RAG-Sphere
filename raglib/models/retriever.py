@@ -83,6 +83,18 @@ class VectorGRRetrieverConfig(BaseRetrieverConfig):
         return replace(self, **kwargs)
     
 @dataclass
+class VectorCypherGRRetrieverConfig(BaseRetrieverConfig):
+    name: ClassVar[RetrieverType] = RetrieverType.VECTORCYPHERGR
+    top_k: int = 5                   
+    similarity_fn: str = "cosine"
+    f_index_name: str = "ft_index_all"
+    v_index_name: str = "vector_index_all"
+    filters: Dict[str, Any] | None = None        # Filters for metadata pre-filtering. When performing a similarity search, one may have constraints to apply. For instance, filtering out movies released before 2000. This can be achieved using filters.
+
+    def update(self, **kwargs):
+        return replace(self, **kwargs)
+    
+@dataclass
 class HybridGRRetrieverConfig(BaseRetrieverConfig):
     name: ClassVar[RetrieverType] = RetrieverType.HYBRIDGR
     top_k: int = 5                  
@@ -90,6 +102,17 @@ class HybridGRRetrieverConfig(BaseRetrieverConfig):
     f_index_name: str = "ft_index_all"
     v_index_name: str = "vector_index_all"
     return_properties: List[str] | None = None   # List of node properties to return.
+
+    def update(self, **kwargs):
+        return replace(self, **kwargs)
+ 
+@dataclass
+class HybridCypherGRRetrieverConfig(BaseRetrieverConfig):
+    name: ClassVar[RetrieverType] = RetrieverType.HYBRIDCYPHERGR
+    top_k: int = 5                  
+    similarity_fn: str = "cosine"
+    f_index_name: str = "ft_index_all"
+    v_index_name: str = "vector_index_all"
 
     def update(self, **kwargs):
         return replace(self, **kwargs)

@@ -4,7 +4,7 @@ from .indexer import (
     NaiveGRIndexerConfig,
     NaiveRAGIndexerConfig,
     VectorGRIndexerConfig,
-    HybridGRIndexerConfig
+    HybridGRIndexerConfig,
     # ADD MORE
 )
 from .retriever import (
@@ -13,8 +13,10 @@ from .retriever import (
     NaiveRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
     VectorGRRetrieverConfig,
+    VectorCypherGRRetrieverConfig,
     HybridGRRetrieverConfig,
-    Text2CypherRetrieverConfig
+    HybridCypherGRRetrieverConfig,
+    Text2CypherRetrieverConfig,
     # ADD MORE
 )
 
@@ -25,12 +27,15 @@ __all__ = [
     NaiveRAGIndexerConfig,
     VectorGRIndexerConfig,
     HybridGRIndexerConfig,
+    
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
     VectorGRRetrieverConfig,
+    VectorCypherGRRetrieverConfig,
     HybridGRRetrieverConfig,
-    Text2CypherRetrieverConfig
+    HybridCypherGRRetrieverConfig,
+    Text2CypherRetrieverConfig,
     # ADD MORE
 ] 

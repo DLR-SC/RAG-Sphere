@@ -13,7 +13,9 @@ from .retriever import (
     NaiveGraphRAGRetriever,
     NaiveRAGRetriever,
     VectorGRRetriever,
+    VectorCypherGRRetriever,
     HybridGRRetriever,
+    HybridCypherGRRetriever,
     Text2CypherRetriever
     # ADD MORE
 )
@@ -30,7 +32,9 @@ __all__ = [
     NaiveGraphRAGRetriever,
     NaiveRAGRetriever,
     VectorGRRetriever,
+    VectorCypherGRRetriever,
     HybridGRRetriever,
+    HybridCypherGRRetriever,
     Text2CypherRetriever
     # ADD MORE
 ] 
