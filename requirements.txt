@@ -1,0 +1,23 @@
+# General
+fastapi[standard]
+
+# RAG
+neo4j-graphrag
+psycopg2-binary
+graspologic
+
+# Parser
+docling
+
+# Clients
+python-arango
+elasticsearch==8.18.1
+sentence-transformers
+langchain_ollama
+ollama
+openai
+tiktoken
+
+# Documentation Page
+mkdocs-material
+mkdocs-jupyter

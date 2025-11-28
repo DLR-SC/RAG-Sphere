@@ -1,0 +1,22 @@
+FROM python:3.10-slim-buster
+
+VOLUME /tls
+
+# Workdir
+WORKDIR /app
+
+# install requirements
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+
+# Copy frontend script
+COPY src/eri_components src/eri_components
+COPY src/KG_7_GenerationAPI.py src/KG_7_GenerationAPI.py
+COPY src/DatabaseConnection.py src/DatabaseConnection.py
+COPY src/LLMClient.py src/LLMClient.py
+COPY src/prompts/generate_community_answer.py src/prompts/generate_community_answer.py
+COPY eri.py eri.py
+COPY src/ArangoDB.py src/ArangoDB.py
+
+ENTRYPOINT ["uvicorn", "eri:app"]
+CMD ["--host", "0.0.0.0", "--ssl-certfile", "/tls/cert_webserver_SC-030206L.pem", "--ssl-keyfile", "/tls/key_webserver_SC-030206L.pem"]

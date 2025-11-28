@@ -1,0 +1,1 @@
+models/ contain data models (schemas, settings, structs).

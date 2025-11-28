@@ -1,0 +1,26 @@
+name: raglib
+
+services:
+  elastic_db:
+    image: elasticsearch:8.9.1
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node 
+      - xpack.security.enabled=false
+    ports:
+      - 9200:9200
+    volumes:
+      - ../db/elastic_data:/usr/share/elasticsearch/data
+    container_name: raglib_elasticdb
+
+  arango_db:
+    image: arangodb
+    ports: 
+      - 8529:8529
+    environment:
+      - TZ=Europe/Berlin
+      - ARANGO_ROOT_PASSWORD=
+    restart: unless-stopped
+    volumes:
+      - ../db/arango_data:/var/lib/arangodb3
+    container_name: raglib_arangodb

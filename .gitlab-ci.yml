@@ -1,0 +1,18 @@
+stages:
+  - deploy
+
+pages:
+  stage: deploy
+  image: python:3.10
+  script:
+    - pip install mkdocs-material mkdocs-jupyter
+    - mkdocs build --site-dir public
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .cache/
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "raglib"' 

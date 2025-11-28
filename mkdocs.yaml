@@ -1,0 +1,206 @@
+# Project information
+site_name: RAGsphere
+site_author: Onur Koc
+site_description: RAGsphere page description ..
+site_url: https://dlr.rag-spehere.de
+docs_dir: 'docs'
+site_dir: public
+
+# Repository
+repo_name: ivs-iss/RAGsphere
+repo_url: https://gitlab.dlr.de/dlr-fm/framework/rag_lib
+#edit_uri: 
+#copyright:
+
+# Plugins
+plugins:
+  - search:
+      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - mkdocs-jupyter:
+      execute: false
+  #- charts
+  #- table-reader
+
+# Configuration
+theme:
+  name: material
+  custom_dir: docs/overrides
+  font:
+    text: Noto Sans #Roboto #Merriweather Sans
+    code: Red Hat Mono
+  logo: images/dlrbluetur70.svg
+  icon:
+    #repo: fontawesome/brands/gitlab
+  favicon: images/dlrturdarkblue.svg
+  palette:
+    # Light Mode 1
+    - scheme: dlr
+      toggle:
+        icon: material/lightbulb-auto
+        name: Switch to light mode
+    # Light Mode 2
+    - scheme: dlrh
+      toggle:
+        icon: material/lightbulb
+        name: Switch to hybrid mode
+    # Hybrid Mode
+    - scheme: default
+      toggle:
+        icon: material/lightbulb-variant-outline
+        name: Switch to dark mode
+      #primary: black
+      accent: teal
+    # Dark Mode
+    - scheme: slate
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to default mode
+      #primary: black
+      accent: teal
+  features:
+    - header.autohide
+    - content.code.copy
+    - content.code.select
+    - content.footnote.tooltips
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - navigation.footer
+    - navigation.tabs
+    #- navigation.sections
+    - navigation.indexes
+    - navigation.path
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.preview
+    - navigation.instant.progress
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    #- search.share
+    - search.suggest
+    - toc.follow
+    #- toc.integrate
+    - announce.dismiss
+
+# Extensions
+markdown_extensions:
+  #- mkdocs-click
+  # Python Markdown
+  - admonition
+  - abbr
+  - footnotes
+  - tables
+  - toc:
+      permalink: true
+  - attr_list
+  - md_in_html
+  - def_list
+  # Python Markdown Extensions
+  - pymdownx.fancylists
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.details
+  - pymdownx.blocks.caption
+  - pymdownx.smartsymbols
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  # pymdownx blocks
+  - pymdownx.blocks.admonition:
+      types:
+      - note
+      - attention
+      - caution
+      - danger
+      - error
+      - tip
+      - hint
+      - warning
+      # Custom types
+      - info
+      - check
+  - pymdownx.blocks.details:
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+
+# Additional configuration
+extra:
+  generator: false
+  #homepage: https://dlr.rag-lib.de
+
+extra_css:
+  - stylesheets/custom.css
+
+# Page tree
+nav:
+  - Home:
+    - Welcome: index.md
+    - Getting Started: getting-started.md
+  - Techniques:
+    - Overview: techniques/index.md
+    - Vector RAG ◈: techniques/simpleRAG.md
+    - T-RAG ◈: techniques/T-RAG.md
+    - GNN-RAG ◈: techniques/GNN-RAG.md
+    - Microsoft GraphRAG ◈:
+      - Overview: techniques/GraphRAG-overview.md
+      - Dataflow: techniques/GraphRAG-dataflow.md
+    - GraphRAG Variant ◈: techniques/GraphRAG.md
+    - LightRAG ◈: techniques/LightRAG.md
+    - PathRAG ◈: techniques/PathRAG.md
+    - GARAG ◈: techniques/GARAG.md
+    - Naive GraphRAG ◈: techniques/NaiveGraphRAG.md
+  - Insights:
+    - Overview 💡: insights/index.md
+    - Technique Comparison ⚖️: insights/comparison.md
+    - Practical Selection Guide 🧭: insights/selection.md
+  - Configuration:
+    - Overview: config/index.md
+    - Language Model Selection: config/model-selection.md
+    - RAG Technique Selection: config/technique-selection.md
+    - Dataset Selection: ''
+    - Database Selection: config/database-selection.md
+  - Demo:
+    - Overview: demo/index.md
+    - Notebooks:
+      - RAG: demo/simple_rag.ipynb
+      - T-RAG: ""
+      - GNN-RAG: ""
+      - GraphRAG: ""
+      - Microsoft GraphRAG: ""
+  - ERI:
+    - Overview: eri/index.md
+    - Configuration: eri/config.md
+  - References:
+    - Techniques: references/techniques.md
+    - Data: references/data.md
+  - Stuff:
+    - admonitions: stuff/admonitions.md
+    - code-examples: stuff/code-examples.md
+    - content-tabs: stuff/content-tabs.md
+    - diagrams: stuff/diagrams.md
+
