@@ -1,7 +1,43 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "raglib"
-version = "0.1.0"
-description = "Add your description here"
+name = "ragsphere"
+version = "0.0.1"
+description = "A package that provides various common RAG Algorithms independent from the database backend"
+authors = [
+  { name="Onur Koc", email="onur.koc@dlr.de" },
+]
 readme = "README.md"
-requires-python = "^3.10.14"
-dependencies = []
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+dependencies = [
+    "python-arango>=5.5.0",
+    "elasticsearch==8.18.1",
+    "sentence-transformers>=2.7.0",
+    "fastapi[standard]>=0.115.0",
+    "psycopg2-binary>=2.9.0",
+    "graspologic>=3.0.0",
+    "docling>=0.10.0",
+    "langchain_ollama>=0.1.0",
+    "ollama>=0.3.0",
+    "openai>=1.50.0",
+    "mkdocs-material>=9.5.0",
+    "mkdocs-jupyter>=0.24.0"
+]
+
+# Explicitly define packages to include
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["raglib*"]
+exclude = ["db*", "docker*", "resources*"]
+
+[project.urls]
+Homepage = "https://github.com/DLR-SC/RAG-Sphere"
+Issues = "https://github.com/DLR-SC/RAG-Sphere/issues"
