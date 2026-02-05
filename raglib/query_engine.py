@@ -6,18 +6,11 @@ Handles the full query → retrieve → prompt → answer flow
     -> Pluggable retrievers by name ("graph", "vector", "hybrid", etc.)
     -> Central control over retrieval logic inside the engine
 """
-from typing import (
-    Dict,
-    List,
-    Any,
-    Callable,
-    ClassVar,
-    Optional,
-    TypeVar,
-    Union
-)
+
+from typing import Dict, List, Any, Callable, ClassVar, Optional, TypeVar, Union
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 import json
@@ -29,14 +22,8 @@ from configparser import ConfigParser
 from utils.llm_client import LLMClient
 from utils.arango_client import ArangoDBClient
 
-from models.enums import (
-    RetrieverType,
-    DatabaseType
-)
-from protocols.retriever import (
-    BaseRetriever,
-    BaseRetrieverConfig
-)
+from models.enums import RetrieverType, DatabaseType
+from protocols.retriever import BaseRetriever, BaseRetrieverConfig
 from models.retriever import (
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
@@ -46,7 +33,7 @@ from models.retriever import (
     VectorCypherGRRetrieverConfig,
     HybridGRRetrieverConfig,
     HybridCypherGRRetrieverConfig,
-    Text2CypherRetrieverConfig
+    Text2CypherRetrieverConfig,
 )
 from graphrag.retriever import (
     GraphRAGRetriever,
@@ -58,29 +45,36 @@ from graphrag.retriever import (
     HybridGRRetriever,
     HybridCypherGRRetriever,
     Text2CypherRetriever,
-    TemplateRetriever
+    TemplateRetriever,
 )
 
+
 class QueryEngine:
-    config: ConfigParser                                    # Config file with default settings
-    documents: str                                          # Document path
-    graph_db: Union[DatabaseType, ArangoDBClient]           # Graph database, for now only str input supported
-    vector_db: Union[DatabaseType, Elasticsearch]           # Vector database, for now only str input supported
-    llm: Optional[LLMClient] = None                         # LLM client for the query phase
-    emb_model: Optional[SentenceTransformer] = None         # Embedding model
-    retriever: Union[RetrieverType, BaseRetriever]          # Low level retriever class or retriever type
+    config: ConfigParser  # Config file with default settings
+    documents: str  # Document path
+    graph_db: Union[
+        DatabaseType, ArangoDBClient
+    ]  # Graph database, for now only str input supported
+    vector_db: Union[
+        DatabaseType, Elasticsearch
+    ]  # Vector database, for now only str input supported
+    llm: Optional[LLMClient] = None  # LLM client for the query phase
+    emb_model: Optional[SentenceTransformer] = None  # Embedding model
+    retriever: Union[
+        RetrieverType, BaseRetriever
+    ]  # Low level retriever class or retriever type
     retriever_config: Optional[Union[Dict[str, Any], BaseRetrieverConfig]]
 
     def __init__(
-            self, 
-            config: ConfigParser,
-            documents: str,
-            graph_db: Union[DatabaseType, ArangoDBClient],
-            vector_db: Union[DatabaseType, Elasticsearch],
-            retriever: Union[RetrieverType, BaseRetriever],
-            llm: Optional[LLMClient] = None,
-            emb_model: Optional[SentenceTransformer] = None,
-            retriever_config: Optional[Union[Dict[str, Any], BaseRetrieverConfig]] = None
+        self,
+        config: ConfigParser,
+        documents: str,
+        graph_db: Union[DatabaseType, ArangoDBClient],
+        vector_db: Union[DatabaseType, Elasticsearch],
+        retriever: Union[RetrieverType, BaseRetriever],
+        llm: Optional[LLMClient] = None,
+        emb_model: Optional[SentenceTransformer] = None,
+        retriever_config: Optional[Union[Dict[str, Any], BaseRetrieverConfig]] = None,
     ) -> None:
         # Get config file with default values
         self.config = config
@@ -97,7 +91,7 @@ class QueryEngine:
 
         # Embedding model for the indexing phase
         self.emb_model = emb_model
-        
+
         # Custom retriever config (injected with retriever='name', retriever_config= ..)
         # Using the parameter_schema for reference and merging with defaults
         if isinstance(retriever_config, (BaseRetrieverConfig, type(None))):
@@ -109,36 +103,40 @@ class QueryEngine:
 
         # Set retrieval technique
         if isinstance(retriever, RetrieverType):
-            self.retriever = self._get_retriever(documents=self.documents,
-                                                 config_parser=self.config, 
-                                                 graph_db=self.graph_db,
-                                                 vector_db=self.vector_db,
-                                                 llm=self.llm,
-                                                 emb_model=self.emb_model,
-                                                 retriever=retriever,
-                                                 retriever_config=self.retriever_config)
+            self.retriever = self._get_retriever(
+                documents=self.documents,
+                config_parser=self.config,
+                graph_db=self.graph_db,
+                vector_db=self.vector_db,
+                llm=self.llm,
+                emb_model=self.emb_model,
+                retriever=retriever,
+                retriever_config=self.retriever_config,
+            )
         elif isinstance(retriever, BaseRetriever):
             # retriever is partially instantiated with parameter or config, and later completed with graph_db, llm etc.
-            retriever._set_context(documents=self.documents,
-                                   config_parser=self.config,
-                                   graph_db=self.graph_db,
-                                   vector_db=self.vector_db,
-                                   llm=self.llm,
-                                   emb_model=self.emb_model)
+            retriever._set_context(
+                documents=self.documents,
+                config_parser=self.config,
+                graph_db=self.graph_db,
+                vector_db=self.vector_db,
+                llm=self.llm,
+                emb_model=self.emb_model,
+            )
             self.retriever = retriever
-        
+
     @staticmethod
-    def _get_retriever( 
-            config_parser: ConfigParser,
-            documents: str,
-            graph_db: Union[DatabaseType, ArangoDBClient],
-            vector_db: Union[DatabaseType, Elasticsearch],
-            retriever: RetrieverType,
-            llm: Optional[LLMClient] = None,
-            emb_model: Optional[SentenceTransformer] = None,
-            retriever_config: Optional[BaseRetrieverConfig] = None
-    ) -> None:
-        """ Get Retriever """
+    def _get_retriever(
+        config_parser: ConfigParser,
+        documents: str,
+        graph_db: Union[DatabaseType, ArangoDBClient],
+        vector_db: Union[DatabaseType, Elasticsearch],
+        retriever: RetrieverType,
+        llm: Optional[LLMClient] = None,
+        emb_model: Optional[SentenceTransformer] = None,
+        retriever_config: Optional[BaseRetrieverConfig] = None,
+    ) -> BaseRetriever | None:
+        """Get Retriever"""
         class_args = {
             "config_parser": config_parser,
             "config": retriever_config,
@@ -172,8 +170,10 @@ class QueryEngine:
                 raise ValueError(f"Unknown retriever type")
 
     @staticmethod
-    def _get_retriever_config_class(retriever: RetrieverType) -> BaseRetrieverConfig:
-         match retriever:
+    def _get_retriever_config_class(
+        retriever: RetrieverType,
+    ) -> type[BaseRetrieverConfig] | None:
+        match retriever:
             case RetrieverType.GARAG:
                 return GARAGRetrieverConfig
             case RetrieverType.NAIVEGR:
@@ -196,11 +196,20 @@ class QueryEngine:
                 raise ValueError(f"Unknown retriever name")
 
     def query(
-            self, 
-            prompt: Optional[str] = None, 
-            messages: Optional[List[Dict[str,str]]] = None,
-            retrieval_query: Optional[str] = None,
-            **kwargs: Any
+        self,
+        prompt: Optional[str] = None,
+        messages: Optional[List[Dict[str, str]]] = None,
+        retrieval_query: Optional[str] = None,
+        **kwargs: Any,
     ) -> Any:
-        #prompt_build = self.prompt_builder.build(prompt, retrieved_docs) #ToDO
-        return self.retriever.retrieve(prompt=prompt, messages=messages, retrieval_query=retrieval_query, **kwargs)
+        # prompt_build = self.prompt_builder.build(prompt, retrieved_docs) #ToDO
+
+        if retrieval_query:
+            return self.retriever.retrieve(
+                prompt=prompt,
+                messages=messages,
+                retrieval_query=retrieval_query,
+                **kwargs,
+            )
+        else:
+            return self.retriever.retrieve(prompt=prompt, messages=messages, **kwargs)
