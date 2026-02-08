@@ -9,39 +9,40 @@ from uuid import uuid4
 from re import search
 import json
 
-from eri_components.components import (
-    AuthorizationMethods, 
-    AllowedTypes, 
+from sentence_transformers import SentenceTransformer
+from elasticsearch import Elasticsearch
+
+from ragsphere.eri_components.components import (
+    AuthorizationMethods,
+    AllowedTypes,
     AuthHeader,
-    AuthResponse, 
-    RetrievalRequest, 
-    RetrievalAnswer, 
-    ProviderType
+    AuthResponse,
+    RetrievalRequest,
+    RetrievalAnswer,
+    ProviderType,
 )
-from graphrag import (
+from ragsphere.graphrag import (
     GARAGRetriever,
     GraphRAGRetriever,
     NaiveGraphRAGRetriever,
     NaiveRAGRetriever,
     VectorGRRetriever,
     HybridGRRetriever,
-    Text2CypherRetriever
+    Text2CypherRetriever,
 )
-from models.retriever import (
+from ragsphere.models.retriever import (
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
     VectorGRRetrieverConfig,
     HybridGRRetrieverConfig,
-    Text2CypherRetrieverConfig
+    Text2CypherRetrieverConfig,
 )
 
-from sentence_transformers import SentenceTransformer
-from utils.arango_client import ArangoDBClient
-from utils.postgres_client import PostgresDBClient
-from elasticsearch import Elasticsearch
-from utils.llm_client import LLMClient
+from ragsphere.utils.arango_client import ArangoDBClient
+from ragsphere.utils.postgres_client import PostgresDBClient
+from ragsphere.utils.llm_client import LLMClient
 
 
 # Read eri general config
@@ -55,10 +56,12 @@ authorization_methods = json.loads(config.get("ERI_SETTINGS", "authorization_met
 if isinstance(authorization_methods, str):
     authorization_methods = [authorization_methods]
 elif not (
-        isinstance(authorization_methods, list) and 
-        all(isinstance(method, str) for method in authorization_methods)
-    ):
-    raise ValueError("Expected a json string or a json array of strings in [ERI_SETTINGS] authorization_methods")
+    isinstance(authorization_methods, list)
+    and all(isinstance(method, str) for method in authorization_methods)
+):
+    raise ValueError(
+        "Expected a json string or a json array of strings in [ERI_SETTINGS] authorization_methods"
+    )
 # Read allowed provider types
 allowed_provider_type = config.get("ERI_SETTINGS", "allowed_provider_type").strip()
 # Read the data source name and description
@@ -79,7 +82,7 @@ __RETRIEVAL_METHODS_INFO = {
         "parametersDescription": {
             "confidence_cutoff": "The confidence level, at which to stop returning hits. (float, 0 < confidence_cutoff < 1)"
         },
-        "embeddings": []
+        "embeddings": [],
     },
     "GraphRAG": {
         "id": "GraphRAG",
@@ -88,9 +91,9 @@ __RETRIEVAL_METHODS_INFO = {
         "link": "https://gitlab.dlr.de/sc/ivs-intern/vfchatbot",
         "parametersDescription": {
             "confidence_cutoff": "The confidence level, at which to stop returning hits. (int, 0 < confidence_cutoff < 100)",
-            "community_degree": "The number of layers the graph is searched through. (int, 0 < community_degree)"
+            "community_degree": "The number of layers the graph is searched through. (int, 0 < community_degree)",
         },
-        "embeddings": []
+        "embeddings": [],
     },
     "NaiveGraphRAG": {
         "id": "NaiveGraphRAG",
@@ -100,7 +103,7 @@ __RETRIEVAL_METHODS_INFO = {
         "parametersDescription": {
             "confidence_cutoff": "The confidence level, at which to stop returning hits. (float, 0 < confidence_cutoff < 1)"
         },
-        "embeddings": []
+        "embeddings": [],
     },
     "NaiveRAG": {
         "id": "NaiveRAG",
@@ -110,7 +113,7 @@ __RETRIEVAL_METHODS_INFO = {
         "parametersDescription": {
             "confidence_cutoff": "The confidence level, at which to stop returning hits. (float, 0 < confidence_cutoff < 1)"
         },
-        "embeddings": []
+        "embeddings": [],
     },
     "VectorGR": {
         "id": "VectorGR",
@@ -120,7 +123,7 @@ __RETRIEVAL_METHODS_INFO = {
         "parametersDescription": {
             "filters": "Filters for metadata pre-filtering. (Dictionary: str->Any)"
         },
-        "embeddings": []
+        "embeddings": [],
     },
     "HybridGR": {
         "id": "HybridGR",
@@ -128,7 +131,7 @@ __RETRIEVAL_METHODS_INFO = {
         "description": "",
         "link": "",
         "parametersDescription": {},
-        "embeddings": []
+        "embeddings": [],
     },
     "Text2Cypher": {
         "id": "Text2Cypher",
@@ -136,30 +139,22 @@ __RETRIEVAL_METHODS_INFO = {
         "description": "",
         "link": "",
         "parametersDescription": {},
-        "embeddings": []
-    }
+        "embeddings": [],
+    },
 }
 
 # Other internal Constants
 __SESSION_TOKENS_EXIRE_DURATION = timedelta(minutes=30)
 __IMPLEMENTED_AUTHORITZATION_METHODS = {
     AuthorizationMethods.NONE,
-    AuthorizationMethods.TOKEN
+    AuthorizationMethods.TOKEN,
 }
 __AUTHORIZATION_METHODS_RESPONSES = {
-    AuthorizationMethods.NONE: {
-        "authMethod": "NONE",
-        "authFieldMappings": []
-    },
+    AuthorizationMethods.NONE: {"authMethod": "NONE", "authFieldMappings": []},
     AuthorizationMethods.TOKEN: {
         "authMethod": "TOKEN",
-        "authFieldMappings": [
-            {
-                "authField": "TOKEN",
-                "fieldName": "token"
-            }
-        ]
-    }
+        "authFieldMappings": [{"authField": "TOKEN", "fieldName": "token"}],
+    },
 }
 
 # Convert config values into enum values
@@ -169,27 +164,28 @@ authorization_methods = [
 allowed_provider_type = ProviderType(allowed_provider_type)
 
 # Check for valid authorization method
-if any(method not in __IMPLEMENTED_AUTHORITZATION_METHODS for method in authorization_methods):
-    raise ValueError(f"Unsupported authorization method detected! Please only use the following: {list(__IMPLEMENTED_AUTHORITZATION_METHODS).__repr__()}.")
+if any(
+    method not in __IMPLEMENTED_AUTHORITZATION_METHODS
+    for method in authorization_methods
+):
+    raise ValueError(
+        f"Unsupported authorization method detected! Please only use the following: {list(__IMPLEMENTED_AUTHORITZATION_METHODS).__repr__()}."
+    )
 
 # Build responses dict
 responses = {
     "auth/methods": [
-        __AUTHORIZATION_METHODS_RESPONSES[auth_method] for auth_method in authorization_methods
+        __AUTHORIZATION_METHODS_RESPONSES[auth_method]
+        for auth_method in authorization_methods
     ],
-    "dataSource" : {
-        "name": data_source_name,
-        "description": data_source_description
-    },
+    "dataSource": {"name": data_source_name, "description": data_source_description},
     "embedding/info": [],
     "retrieval/info": [
         __RETRIEVAL_METHODS_INFO[retrieval_id]
         for retrieval_id in config.sections()
         if retrieval_id in __RETRIEVAL_METHODS_INFO
     ],
-    "security/requirements": {
-        "allowedProviderType": allowed_provider_type
-    }
+    "security/requirements": {"allowedProviderType": allowed_provider_type},
 }
 
 # Create retrievers for all specified methods
@@ -205,7 +201,7 @@ if config.has_section("GARAG"):
         config=GARAGRetrieverConfig(
             top_k=ret_config.get("top_k", 1024),
             confidence_cutoff=ret_config.get("confidence_cutoff", 0.4),
-            vector_db_index_name=ret_config["vector_db_index_name"]
+            vector_db_index_name=ret_config["vector_db_index_name"],
         ),
         emb_model=SentenceTransformer(emb_model),
         vector_db=Elasticsearch(elastic_db_url),
@@ -215,8 +211,8 @@ if config.has_section("GARAG"):
             username=arango_db["username"],
             password=arango_db["password"],
             db_name=arango_db["db_name"],
-            graph_name=arango_db["graph_name"]
-        )
+            graph_name=arango_db["graph_name"],
+        ),
     )
 if config.has_section("GraphRAG"):
     ret_config = json.loads(config.get("GraphRAG", "config", fallback="{}")) or {}
@@ -227,14 +223,14 @@ if config.has_section("GraphRAG"):
         config=GraphRAGRetrieverConfig(
             top_k=ret_config.get("top_k", 1024),
             community_degree=ret_config.get("community_degree", 1),
-            confidence_cutoff=ret_config.get("confidence_cutoff", 40)
+            confidence_cutoff=ret_config.get("confidence_cutoff", 40),
         ),
         llm=LLMClient(
             provider=llm["provider"],
             base_url=llm["base_url"],
             api_key=llm["api_key"],
             model_name=llm["model_name"],
-            options=llm["options"]
+            options=llm["options"],
         ),
         graph_db=ArangoDBClient(
             config=None,
@@ -242,8 +238,8 @@ if config.has_section("GraphRAG"):
             username=arango_db["username"],
             password=arango_db["password"],
             db_name=arango_db["db_name"],
-            graph_name=arango_db["graph_name"]
-        )
+            graph_name=arango_db["graph_name"],
+        ),
     )
 if config.has_section("NaiveGraphRAG"):
     ret_config = json.loads(config.get("NaiveGraphRAG", "config", fallback="{}")) or {}
@@ -254,10 +250,10 @@ if config.has_section("NaiveGraphRAG"):
         config=NaiveRAGRetrieverConfig(
             top_k=ret_config.get("top_k", 1024),
             confidence_cutoff=ret_config.get("confidence_cutoff", 0.4),
-            vector_db_index_name=ret_config["vector_db_index_name"]
+            vector_db_index_name=ret_config["vector_db_index_name"],
         ),
         emb_model=SentenceTransformer(emb_model),
-        vector_db=Elasticsearch(elastic_db_url)
+        vector_db=Elasticsearch(elastic_db_url),
     )
 if config.has_section("NaiveRAG"):
     ret_config = json.loads(config.get("NaiveRAG", "config", fallback="{}")) or {}
@@ -268,10 +264,10 @@ if config.has_section("NaiveRAG"):
         config=NaiveRAGRetrieverConfig(
             top_k=ret_config.get("top_k", 1024),
             confidence_cutoff=ret_config.get("confidence_cutoff", 0.4),
-            vector_db_index_name=ret_config["vector_db_index_name"]
+            vector_db_index_name=ret_config["vector_db_index_name"],
         ),
         emb_model=SentenceTransformer(emb_model),
-        vector_db=Elasticsearch(elastic_db_url)
+        vector_db=Elasticsearch(elastic_db_url),
     )
 if config.has_section("VectorGR"):
     ret_config = json.loads(config.get("VectorGR", "config", fallback="{}")) or {}
@@ -280,32 +276,32 @@ if config.has_section("VectorGR"):
     neo4j_db = json.loads(config.get("VectorGR", "neo4j_db")) or {}
 
     ret_config_parser = ConfigParser()
-    ret_config_parser.read_dict({
-        "neo4j": {
-            "url": neo4j_db["url"],
-            "db_name": neo4j_db["db_name"],
-            "password": neo4j_db["password"]
-        },
-        "llm_query" : {
-            "provider": llm["provider"],
-            "base_url": llm["base_url"],
-            "api_key": llm["api_key"],
-            "model_name": llm["model_name"],
-            "options": llm["options"]
-        },
-        "general" : {
-            "default_embedding_model": emb_model
+    ret_config_parser.read_dict(
+        {
+            "neo4j": {
+                "url": neo4j_db["url"],
+                "db_name": neo4j_db["db_name"],
+                "password": neo4j_db["password"],
+            },
+            "llm_query": {
+                "provider": llm["provider"],
+                "base_url": llm["base_url"],
+                "api_key": llm["api_key"],
+                "model_name": llm["model_name"],
+                "options": llm["options"],
+            },
+            "general": {"default_embedding_model": emb_model},
         }
-    })
+    )
 
     retrieval_methods["VectorGR"] = VectorGRRetriever(
         config=VectorGRRetrieverConfig(
             top_k=ret_config.get("top_k", 5),
             v_index_name=ret_config["v_index_name"],
             return_properties=ret_config.get("return_properties") or None,
-            filters=ret_config.get("filters") or None
+            filters=ret_config.get("filters") or None,
         ),
-        config_parser=ret_config_parser
+        config_parser=ret_config_parser,
     )
 if config.has_section("HybridGR"):
     ret_config = json.loads(config.get("HybridGR", "config", fallback="{}")) or {}
@@ -314,32 +310,32 @@ if config.has_section("HybridGR"):
     neo4j_db = json.loads(config.get("HybridGR", "neo4j_db")) or {}
 
     ret_config_parser = ConfigParser()
-    ret_config_parser.read_dict({
-        "neo4j": {
-            "url": neo4j_db["url"],
-            "db_name": neo4j_db["db_name"],
-            "password": neo4j_db["password"]
-        },
-        "llm_query" : {
-            "provider": llm["provider"],
-            "base_url": llm["base_url"],
-            "api_key": llm["api_key"],
-            "model_name": llm["model_name"],
-            "options": llm["options"]
-        },
-        "general" : {
-            "default_embedding_model": emb_model
+    ret_config_parser.read_dict(
+        {
+            "neo4j": {
+                "url": neo4j_db["url"],
+                "db_name": neo4j_db["db_name"],
+                "password": neo4j_db["password"],
+            },
+            "llm_query": {
+                "provider": llm["provider"],
+                "base_url": llm["base_url"],
+                "api_key": llm["api_key"],
+                "model_name": llm["model_name"],
+                "options": llm["options"],
+            },
+            "general": {"default_embedding_model": emb_model},
         }
-    })
+    )
 
     retrieval_methods["HybridGR"] = HybridGRRetriever(
         config=HybridGRRetrieverConfig(
             top_k=ret_config.get("top_k", 5),
             v_index_name=ret_config["v_index_name"],
             f_index_name=ret_config["f_index_name"],
-            return_properties=ret_config.get("return_properties") or None
+            return_properties=ret_config.get("return_properties") or None,
         ),
-        config_parser=ret_config_parser
+        config_parser=ret_config_parser,
     )
 if config.has_section("Text2Cypher"):
     ret_config = json.loads(config.get("Text2Cypher", "config", fallback="{}")) or {}
@@ -347,26 +343,26 @@ if config.has_section("Text2Cypher"):
     neo4j_db = json.loads(config.get("Text2Cypher", "neo4j_db")) or {}
 
     ret_config_parser = ConfigParser()
-    ret_config_parser.read_dict({
-        "neo4j": {
-            "url": neo4j_db["url"],
-            "db_name": neo4j_db["db_name"],
-            "password": neo4j_db["password"]
-        },
-        "llm_query" : {
-            "provider": llm["provider"],
-            "base_url": llm["base_url"],
-            "api_key": llm["api_key"],
-            "model_name": llm["model_name"],
-            "options": llm["options"]
+    ret_config_parser.read_dict(
+        {
+            "neo4j": {
+                "url": neo4j_db["url"],
+                "db_name": neo4j_db["db_name"],
+                "password": neo4j_db["password"],
+            },
+            "llm_query": {
+                "provider": llm["provider"],
+                "base_url": llm["base_url"],
+                "api_key": llm["api_key"],
+                "model_name": llm["model_name"],
+                "options": llm["options"],
+            },
         }
-    })
+    )
 
     retrieval_methods["Text2Cypher"] = Text2CypherRetriever(
-        config=Text2CypherRetrieverConfig(
-            examples=ret_config.get("examples") or None
-        ),
-        config_parser=ret_config_parser
+        config=Text2CypherRetrieverConfig(examples=ret_config.get("examples") or None),
+        config_parser=ret_config_parser,
     )
 
 # Storage for session tokens
@@ -379,17 +375,19 @@ if AuthorizationMethods.TOKEN in authorization_methods:
         username=postgres_connection["username"],
         password=postgres_connection["password"],
         url=postgres_connection["url"],
-        database_name=postgres_connection["database_name"]
+        database_name=postgres_connection["database_name"],
     )
 
     # Create used table, if not already present
-    _postgres_db.cursor.execute("CREATE TABLE IF NOT EXISTS API_Key (key varchar PRIMARY KEY, user varchar);")
+    _postgres_db.cursor.execute(
+        "CREATE TABLE IF NOT EXISTS API_Key (key varchar PRIMARY KEY, user varchar);"
+    )
 else:
     _postgres_db = None
 
 # Check for a ssl certificate and create FastAPI app
 if cert and key:
-    app = FastAPI(ssl_keyfile = key, ssl_certfile = cert)
+    app = FastAPI(ssl_keyfile=key, ssl_certfile=cert)
 else:
     app = FastAPI()
 
@@ -399,12 +397,13 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://orbait.intra.dlr.de",  # your frontend domain
-        "http://localhost:3000",       # (optional) local dev frontend
+        "http://localhost:3000",  # (optional) local dev frontend
     ],
     allow_credentials=True,
-    allow_methods=["*"],               # allow all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],               # allow all headers
+    allow_methods=["*"],  # allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # allow all headers
 )
+
 
 ## HTTP Methods
 @app.exception_handler(HTTPException)
@@ -412,10 +411,11 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.detail},
-        headers=exc.headers or {}
+        headers=exc.headers or {},
     )
-    
-@app.get("/auth/methods", status_code = 200)
+
+
+@app.get("/auth/methods", status_code=200)
 def get_auth_methods():
     """
     [Called by FastAPI]
@@ -424,7 +424,8 @@ def get_auth_methods():
     # returns the requested part of the specification:
     return responses["auth/methods"]
 
-@app.get("/dataSource", status_code = 200)
+
+@app.get("/dataSource", status_code=200)
 def get_data_source(token_header: Annotated[AuthHeader, Header()]):
     """
     [Called by FastAPI]
@@ -434,13 +435,14 @@ def get_data_source(token_header: Annotated[AuthHeader, Header()]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid Token",
-            headers={"WWW_Authenticate": "Bearer"}
+            headers={"WWW_Authenticate": "Bearer"},
         )
 
     # returns the requested part of the specification:
     return responses["dataSource"]
 
-@app.get("/embedding/info", status_code = 200)
+
+@app.get("/embedding/info", status_code=200)
 def get_embedding_info(token_header: Annotated[AuthHeader, Header()]):
     """
     [Called by FastAPI]
@@ -450,13 +452,14 @@ def get_embedding_info(token_header: Annotated[AuthHeader, Header()]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid Token",
-            headers={"WWW_Authenticate": "Bearer"}
+            headers={"WWW_Authenticate": "Bearer"},
         )
 
     # returns the requested part of the specification:
     return responses["embedding/info"]
 
-@app.get("/retrieval/info", status_code = 200)
+
+@app.get("/retrieval/info", status_code=200)
 def get_retrieval_info(token_header: Annotated[AuthHeader, Header()]):
     """
     [Called by FastAPI]
@@ -466,13 +469,14 @@ def get_retrieval_info(token_header: Annotated[AuthHeader, Header()]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid Token",
-            headers={"WWW_Authenticate": "Bearer"}
+            headers={"WWW_Authenticate": "Bearer"},
         )
 
     # returns the requested part of the specification:
     return responses["retrieval/info"]
 
-@app.get("/security/requirements", status_code = 200)
+
+@app.get("/security/requirements", status_code=200)
 def get_security_requirements(token_header: Annotated[AuthHeader, Header()]):
     """
     [Called by FastAPI]
@@ -482,11 +486,12 @@ def get_security_requirements(token_header: Annotated[AuthHeader, Header()]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid Token",
-            headers={"WWW_Authenticate": "Bearer"}
+            headers={"WWW_Authenticate": "Bearer"},
         )
 
     # returns the requested part of the specification:
     return responses["security/requirements"]
+
 
 @app.post("/auth")
 def authenticate(authMethod: AuthorizationMethods, request: Request) -> AuthResponse:
@@ -499,64 +504,66 @@ def authenticate(authMethod: AuthorizationMethods, request: Request) -> AuthResp
     # Remove all expired tokens
     global _session_tokens
     _session_tokens = [
-        (session_token, expiration_date) 
+        (session_token, expiration_date)
         for (session_token, expiration_date) in _session_tokens
         if datetime.now() > expiration_date
     ]
 
     # Create new session token
-    match(authMethod):
+    match (authMethod):
         case AuthorizationMethods.NONE:
             session_token = str(uuid4())
-            _session_tokens.append((session_token, datetime.now() + __SESSION_TOKENS_EXIRE_DURATION))
-
-            return AuthResponse(
-                success=True,
-                token=session_token,
-                message=""
+            _session_tokens.append(
+                (session_token, datetime.now() + __SESSION_TOKENS_EXIRE_DURATION)
             )
+
+            return AuthResponse(success=True, token=session_token, message="")
         case AuthorizationMethods.TOKEN:
             # Extract Bearer token
             if not (request.headers.get("authorization") or "").startswith("Bearer "):
                 return AuthResponse(
                     success=False,
                     token="",
-                    message="Bearer Token Authentication failed, invalid format!"
+                    message="Bearer Token Authentication failed, invalid format!",
                 )
             bearer_token = request.headers.get("authorization").removeprefix("Bearer ")
-            
+
             # Check for token in db
             try:
-                _postgres_db.cursor.execute(f"SELECT user FROM API_Key WHERE key = {bearer_token};")
+                _postgres_db.cursor.execute(
+                    f"SELECT user FROM API_Key WHERE key = {bearer_token};"
+                )
                 user = _postgres_db.cursor.fetchone()
                 if user:
                     session_token = str(uuid4())
-                    _session_tokens.append((session_token, datetime.now() + __SESSION_TOKENS_EXIRE_DURATION))
-                    # Success
-                    return AuthResponse(
-                        success=True,
-                        token=session_token,
-                        message=""
+                    _session_tokens.append(
+                        (
+                            session_token,
+                            datetime.now() + __SESSION_TOKENS_EXIRE_DURATION,
+                        )
                     )
+                    # Success
+                    return AuthResponse(success=True, token=session_token, message="")
                 else:
                     # Invalid Token
                     return AuthResponse(
                         success=False,
                         token="",
-                        message="Bearer Token Authentication failed, invalid token!"
+                        message="Bearer Token Authentication failed, invalid token!",
                     )
             except Exception as error:
                 # Error during Token check
-                return AuthResponse(
-                    success=False,
-                    token="",
-                    message=str(error)
-                )
+                return AuthResponse(success=False, token="", message=str(error))
 
-    return AuthResponse(success=False, token="", message="Unknown method of authorization!")
+    return AuthResponse(
+        success=False, token="", message="Unknown method of authorization!"
+    )
+
 
 @app.post("/retrieval")
-def retrieve(retrieval_request: RetrievalRequest, token_header: Annotated[AuthHeader, Header()]) -> List[RetrievalAnswer]:
+def retrieve(
+    retrieval_request: RetrievalRequest, token_header: Annotated[AuthHeader, Header()]
+) -> List[RetrievalAnswer]:
     """
     [Called by FastAPI]
     Retrieves data requested by the RetrievalRequest after authenticating the token.
@@ -567,23 +574,22 @@ def retrieve(retrieval_request: RetrievalRequest, token_header: Annotated[AuthHe
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid Token",
-            headers={"WWW_Authenticate": "Bearer"}
+            headers={"WWW_Authenticate": "Bearer"},
         )
-    
+
     # Check for valid prompt type
-    if(retrieval_request.latestUserPromptType != AllowedTypes.TEXT):
+    if retrieval_request.latestUserPromptType != AllowedTypes.TEXT:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid Prompt Type"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Prompt Type"
         )
-    
+
     # Check retrieval process
     if retrieval_request.retrievalProcessId not in retrieval_methods:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Unknown or unsupported retrieval process"
+            detail="Unknown or unsupported retrieval process",
         )
-    
+
     # Copy max matches to parameter dict
     if retrieval_request.parameters is None:
         retrieval_request.parameters = {"top_k": str(retrieval_request.maxMatches)}
@@ -593,30 +599,37 @@ def retrieve(retrieval_request: RetrievalRequest, token_header: Annotated[AuthHe
     parameters = {
         key: json.loads(value)
         for key, value in retrieval_request.parameters.items()
-        if key == "top_k" or key in __RETRIEVAL_METHODS_INFO[retrieval_request.retrievalProcessId]["parametersDescription"]
+        if key == "top_k"
+        or key
+        in __RETRIEVAL_METHODS_INFO[retrieval_request.retrievalProcessId][
+            "parametersDescription"
+        ]
     }
 
     try:
         # Fetch retrieval result
         result = retrieval_methods[retrieval_request.retrievalProcessId].retrieve(
-            prompt=str(retrieval_request.latestUserPrompt),
-            **parameters
+            prompt=str(retrieval_request.latestUserPrompt), **parameters
         )
-
 
         # If result is not in form List[RetrievalAnswer], the format has to be modified manually
         ## EXTEND SUPPORTED METHODS HERE
-        if retrieval_request.retrievalProcessId in {"VectorGR", "HybridGR", "Text2Cypher"}:
+        if retrieval_request.retrievalProcessId in {
+            "VectorGR",
+            "HybridGR",
+            "Text2Cypher",
+        }:
             result = [
                 RetrievalAnswer(
                     name="Knowledge Graph Retrieval",
                     category="Extracted data from multiple different sources",
                     path="",
                     type=AllowedTypes.TEXT,
-                    matchedContent=match.content,   #match.__repr__(), match.content
+                    matchedContent=match.content,  # match.__repr__(), match.content
                     surroundingContent=[],
-                    links=[]
-                ) for match in result["retriever_result"]
+                    links=[],
+                )
+                for match in result["retriever_result"]
             ]
 
     except Exception as error:
@@ -629,4 +642,3 @@ def retrieve(retrieval_request: RetrievalRequest, token_header: Annotated[AuthHe
 
     print(result)
     return result
-    
