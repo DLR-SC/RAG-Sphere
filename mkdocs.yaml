@@ -7,8 +7,8 @@ docs_dir: 'docs'
 site_dir: public
 
 # Repository
-repo_name: ivs-iss/RAGsphere
-repo_url: https://gitlab.dlr.de/dlr-fm/framework/rag_lib
+repo_name: DLR-SC/RAG-Sphere
+repo_url: https://github.com/DLR-SC/RAG-Sphere
 #edit_uri: 
 #copyright:
 
@@ -28,10 +28,10 @@ theme:
   font:
     text: Noto Sans #Roboto #Merriweather Sans
     code: Red Hat Mono
-  logo: images/dlrbluetur70.svg
+  logo: images/ragsphere-blue.svg
   icon:
     #repo: fontawesome/brands/gitlab
-  favicon: images/dlrturdarkblue.svg
+  favicon: images/ragsphere-top.svg
   palette:
     # Light Mode 1
     - scheme: dlr
@@ -198,9 +198,3 @@ nav:
   - References:
     - Techniques: references/techniques.md
     - Data: references/data.md
-  - Stuff:
-    - admonitions: stuff/admonitions.md
-    - code-examples: stuff/code-examples.md
-    - content-tabs: stuff/content-tabs.md
-    - diagrams: stuff/diagrams.md
-

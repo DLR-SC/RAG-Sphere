@@ -1,6 +1,6 @@
 ---
 template: home.html
-title: RAGLib - a comprehensive collection of RAG techniques.
+title: RAGsphere - a comprehensive collection of RAG techniques.
 hide:
   - toc
   - navigation
@@ -28,7 +28,6 @@ Explore the comprehensive list of Retrieval-Augmented Generation methods that ha
 | 5 | Advanced Architecture 🛰️ | Microsoft GraphRAG - <em>in progress</em> | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/microsoft/graphrag) [![arxiv](https://img.shields.io/badge/arXiv-View-rgb(179, 27, 27)?style=flat&logo=arxiv)](https://arxiv.org/abs/2404.16130) [![jupyter](https://img.shields.io/badge/Jupyter-View-rgb(243, 118, 38)?style=flat&logo=jupyter)](demo/Demo.ipynb) |
 | 5 | Advanced Architecture 🛰️ | LightRAG - <em>in progress</em> | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/HKUDS/LightRAG) [![arxiv](https://img.shields.io/badge/arXiv-View-rgb(179, 27, 27)?style=flat&logo=arxiv)](https://arxiv.org/abs/2410.05779) [![jupyter](https://img.shields.io/badge/Jupyter-View-rgb(243, 118, 38)?style=flat&logo=jupyter)](demo/Demo.ipynb) |
 | 5 | Advanced Architecture 🛰️ | PathRAG - <em>in progress</em> | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/BUPT-GAMMA/PathRAG) [![arxiv](https://img.shields.io/badge/arXiv-View-rgb(179, 27, 27)?style=flat&logo=arxiv)](https://arxiv.org/abs/2502.14902) [![jupyter](https://img.shields.io/badge/Jupyter-View-rgb(243, 118, 38)?style=flat&logo=jupyter)](demo/Demo.ipynb) |
-| 2 | Advanced Retrieval 🧠 |  |  |
 | 3 | Iterative Techniques 🔁 |  |  |
 | 4 | Context Enrichment 🌐🧩 |  |  |
 | 5 | Evaluation 📊 |  |  |

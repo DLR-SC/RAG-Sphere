@@ -7,9 +7,13 @@ name = "ragsphere"
 version = "0.1.0"
 description = "A package that provides various common RAG Algorithms independent from the database backend"
 authors = [
+  { name="Tilmann Diepenbruck", email="tilmann.diepenbruck@dlr.de" },
   { name="Onur Koc", email="onur.koc@dlr.de" },
+  { name="Jonas Putz", email="jonas.putz@dlr.de" },
+  { name="Christian Rietzsch", email="christian.rietzsch@dlr.de" },
 ]
 readme = "README.md"
+keywords = ["RAG", "retrieval", "machine-learning", "ai", "embedding", "vector-search"]
 requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -29,13 +33,16 @@ dependencies = [
     "ollama>=0.3.0",
     "openai>=1.50.0",
     "mkdocs-material>=9.5.0",
-    "mkdocs-jupyter>=0.24.0"
+    "mkdocs-jupyter>=0.24.0",
+    "neo4j>=5.0.0",
+    "neo4j-graphrag>=0.1.0",
+    "tiktoken>=0.7.0",
 ]
 
 # Explicitly define packages to include
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["raglib*"]
+include = ["ragsphere*"]
 exclude = ["db*", "docker*", "resources*"]
 
 [project.urls]

@@ -5,6 +5,7 @@ fastapi[standard]
 neo4j-graphrag
 psycopg2-binary
 graspologic
+langchain_ollama
 
 # Parser
 docling
@@ -13,11 +14,10 @@ docling
 python-arango
 elasticsearch==8.18.1
 sentence-transformers
-langchain_ollama
 ollama
 openai
 tiktoken
 
-# Documentation Page
+# Documentation
 mkdocs-material
 mkdocs-jupyter
