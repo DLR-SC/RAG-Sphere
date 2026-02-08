@@ -8,7 +8,7 @@ site_dir: public
 
 # Repository
 repo_name: DLR-SC/RAG-Sphere
-repo_url: https://github.com/DLR-SC/RAG-Sphere
+repo_url: https://github.com/DLR-SC/RAG-Sphere/tree/rag-sphere
 #edit_uri: 
 #copyright:
 
@@ -151,7 +151,7 @@ markdown_extensions:
 # Additional configuration
 extra:
   generator: false
-  #homepage: https://dlr.rag-lib.de
+  #homepage: https://dlr.rag-sphere.de
 
 extra_css:
   - stylesheets/custom.css
@@ -178,12 +178,15 @@ nav:
     - Overview 💡: insights/index.md
     - Technique Comparison ⚖️: insights/comparison.md
     - Practical Selection Guide 🧭: insights/selection.md
-  - Configuration:
-    - Overview: config/index.md
-    - Language Model Selection: config/model-selection.md
-    - RAG Technique Selection: config/technique-selection.md
-    - Dataset Selection: ''
-    - Database Selection: config/database-selection.md
+  #- Configuration:
+  #  - Overview: config/index.md
+  #  - Language Model Selection: config/model-selection.md
+  #  - RAG Technique Selection: config/technique-selection.md
+  #  - Dataset Selection: ''
+  #  - Database Selection: config/database-selection.md
+  - ERI:
+    - Overview: eri/index.md
+    - Configuration: eri/config.md
   - Demo:
     - Overview: demo/index.md
     - Notebooks:
@@ -192,9 +195,6 @@ nav:
       - GNN-RAG: ""
       - GraphRAG: ""
       - Microsoft GraphRAG: ""
-  - ERI:
-    - Overview: eri/index.md
-    - Configuration: eri/config.md
   - References:
     - Techniques: references/techniques.md
     - Data: references/data.md
