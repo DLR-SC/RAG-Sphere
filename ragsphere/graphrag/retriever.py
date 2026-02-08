@@ -15,11 +15,11 @@ from elasticsearch import Elasticsearch
 from configparser import ConfigParser
 import traceback
 
-from utils.llm_client import LLMClient
-from utils.arango_client import ArangoDBClient
+from ragsphere.utils.llm_client import LLMClient
+from ragsphere.utils.arango_client import ArangoDBClient
 
-from models.enums import RetrieverType, DatabaseType
-from models.retriever import (
+from ragsphere.models.enums import RetrieverType, DatabaseType
+from ragsphere.models.retriever import (
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
@@ -29,16 +29,19 @@ from models.retriever import (
     Text2CypherRetrieverConfig,
     TemplateRetrieverConfig,
 )
-from protocols.retriever import BaseRetriever, BaseRetrieverConfig
+from ragsphere.protocols.retriever import BaseRetriever, BaseRetrieverConfig
 
-from eri_components.components import RetrievalAnswer, AllowedTypes
-from graphrag.query.graphRAG_retriever import (
+from ragsphere.eri_components.components import RetrievalAnswer, AllowedTypes
+from ragsphere.graphrag.query.graphRAG_retriever import (
     _graph_rag_retrieve,
     _garag_retrieve,
     _naive_graph_rag_retrieve,
     _naive_rag_retrieve,
 )
-from graphrag.query.neo4j_retriever import _graphrag_retrieve, _text2cypher_retrieve
+from ragsphere.graphrag.query.neo4j_retriever import (
+    _graphrag_retrieve,
+    _text2cypher_retrieve,
+)
 
 
 class GARAGRetriever(BaseRetriever):

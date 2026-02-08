@@ -1,8 +1,8 @@
-"""The RAGlib package."""
+"""The RAGsphere package."""
 
-from rag import RAG
-from indexer_engine import IndexerEngine
-from query_engine import QueryEngine
+from ragsphere.rag import RAG
+from ragsphere.indexer_engine import IndexerEngine
+from ragsphere.query_engine import QueryEngine
 
 
 __all__ = ["IndexerEngine", "QueryEngine", "RAG"]

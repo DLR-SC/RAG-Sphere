@@ -2,26 +2,17 @@
 Indexer Config
 """
 
-from dataclasses import (
-    dataclass, 
-    field, 
-    replace
-)
-from typing import (
-    ClassVar,
-    Dict,
-    List,
-    Any
-)
+from dataclasses import dataclass, field, replace
+from typing import ClassVar, Dict, List, Any
 
-from protocols.indexer import BaseIndexerConfig
-from models.enums import (
-    IndexerType
-)
+from ragsphere.protocols.indexer import BaseIndexerConfig
+from ragsphere.models.enums import IndexerType
 
 """
 Set default values
 """
+
+
 @dataclass
 class GARAGIndexerConfig(BaseIndexerConfig):
     name: ClassVar[IndexerType] = IndexerType.GARAG
@@ -29,6 +20,7 @@ class GARAGIndexerConfig(BaseIndexerConfig):
 
     def update(self, **kwargs):
         return replace(self, **kwargs)
+
 
 @dataclass
 class GraphRAGIndexerConfig(BaseIndexerConfig):
@@ -38,6 +30,7 @@ class GraphRAGIndexerConfig(BaseIndexerConfig):
     def update(self, **kwargs):
         return replace(self, **kwargs)
 
+
 @dataclass
 class NaiveGRIndexerConfig(BaseIndexerConfig):
     name: ClassVar[IndexerType] = IndexerType.NAIVEGR
@@ -46,6 +39,7 @@ class NaiveGRIndexerConfig(BaseIndexerConfig):
     def update(self, **kwargs):
         return replace(self, **kwargs)
 
+
 @dataclass
 class NaiveRAGIndexerConfig(BaseIndexerConfig):
     name: ClassVar[IndexerType] = IndexerType.VECTOR
@@ -53,6 +47,7 @@ class NaiveRAGIndexerConfig(BaseIndexerConfig):
 
     def update(self, **kwargs):
         return replace(self, **kwargs)
+
 
 @dataclass
 class VectorGRIndexerConfig(BaseIndexerConfig):
@@ -63,18 +58,22 @@ class VectorGRIndexerConfig(BaseIndexerConfig):
     def update(self, **kwargs):
         return replace(self, **kwargs)
 
+
 @dataclass
 class HybridGRIndexerConfig(BaseIndexerConfig):
     name: ClassVar[IndexerType] = IndexerType.HYBRIDGR
     similarity_fn: str = "cosine"
     f_index_name: str = "ft_index_all"
     v_index_name: str = "vector_index_all"
-    target_nodes: List[str] | None = None          # Using only properties from target nodes to create the fulltext index e.g. ["Procedure", "Command", "Event"]
-    property_limit: int = 40                       # max. 80 with a short query
-    
+    target_nodes: List[str] | None = (
+        None  # Using only properties from target nodes to create the fulltext index e.g. ["Procedure", "Command", "Event"]
+    )
+    property_limit: int = 40  # max. 80 with a short query
+
     def update(self, **kwargs):
         return replace(self, **kwargs)
-    
+
+
 @dataclass
 class TemplateIndexerConfig(BaseIndexerConfig):
     name: ClassVar[IndexerType] = IndexerType.TEMP
@@ -83,4 +82,3 @@ class TemplateIndexerConfig(BaseIndexerConfig):
 
     def update(self, **kwargs):
         return replace(self, **kwargs)
-    

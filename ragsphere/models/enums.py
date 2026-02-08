@@ -1,4 +1,5 @@
-""" Enum classes """
+"""Enum classes"""
+
 from typing import (
     List,
     Dict,
@@ -9,10 +10,11 @@ from typing import (
     ClassVar,
     Optional,
     TypeVar,
-    Union
+    Union,
 )
 
 from enum import Enum
+
 
 class IndexerType(str, Enum):
     GARAG = "garag"
@@ -22,6 +24,7 @@ class IndexerType(str, Enum):
     VECTORGR = "vectorgraphrag"
     HYBRIDGR = "hybridgraphrag"
     TEMP = "template"
+
 
 class RetrieverType(str, Enum):
     GARAG = "garag"
@@ -35,11 +38,13 @@ class RetrieverType(str, Enum):
     TEXT2CYPHER = "text2cypher"
     TEMP = "template"
 
+
 class DatabaseType(str, Enum):
     POSTGRESQL = "postgresql"
     ELASTICSEARCH = "elasticsearch"
     ARANGODB = "arangodb"
     NEO4J = "neo4j"
+
 
 SUPPORTED_COMBINATIONS: List[Tuple[IndexerType, RetrieverType]] = [
     (IndexerType.GARAG, None),

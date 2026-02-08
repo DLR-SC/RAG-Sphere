@@ -19,12 +19,12 @@ from sentence_transformers import SentenceTransformer
 from elasticsearch import Elasticsearch
 from configparser import ConfigParser
 
-from utils.llm_client import LLMClient
-from utils.arango_client import ArangoDBClient
+from ragsphere.utils.llm_client import LLMClient
+from ragsphere.utils.arango_client import ArangoDBClient
 
-from models.enums import RetrieverType, DatabaseType
-from protocols.retriever import BaseRetriever, BaseRetrieverConfig
-from models.retriever import (
+from ragsphere.models.enums import RetrieverType, DatabaseType
+from ragsphere.protocols.retriever import BaseRetriever, BaseRetrieverConfig
+from ragsphere.models.retriever import (
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
@@ -35,7 +35,7 @@ from models.retriever import (
     HybridCypherGRRetrieverConfig,
     Text2CypherRetrieverConfig,
 )
-from graphrag.retriever import (
+from ragsphere.graphrag.retriever import (
     GraphRAGRetriever,
     NaiveGraphRAGRetriever,
     GARAGRetriever,

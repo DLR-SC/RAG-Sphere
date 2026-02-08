@@ -27,17 +27,17 @@ from sentence_transformers import SentenceTransformer
 from elasticsearch import Elasticsearch
 from configparser import ConfigParser
 
-from utils.llm_client import LLMClient
-from utils.arango_client import ArangoDBClient
-from graphrag.prompts import check_connection
+from ragsphere.utils.llm_client import LLMClient
+from ragsphere.utils.arango_client import ArangoDBClient
+from ragsphere.graphrag.prompts import check_connection
 
-from indexer_engine import IndexerEngine
-from query_engine import QueryEngine
+from ragsphere.indexer_engine import IndexerEngine
+from ragsphere.query_engine import QueryEngine
 
-from protocols.rag import BaseRAG
-from protocols.indexer import BaseIndexer, BaseIndexerConfig
-from protocols.retriever import BaseRetriever, BaseRetrieverConfig
-from models.enums import (
+from ragsphere.protocols.rag import BaseRAG
+from ragsphere.protocols.indexer import BaseIndexer, BaseIndexerConfig
+from ragsphere.protocols.retriever import BaseRetriever, BaseRetrieverConfig
+from ragsphere.models.enums import (
     IndexerType,
     RetrieverType,
     DatabaseType,
@@ -45,7 +45,6 @@ from models.enums import (
 )
 
 """ 
-
 """
 
 

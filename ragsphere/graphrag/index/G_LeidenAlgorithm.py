@@ -5,10 +5,11 @@ from random import seed, choices, shuffle
 from configparser import ConfigParser
 from tqdm import tqdm
 
-from utils.arango_client import ArangoDBClient
+from ragsphere.utils.arango_client import ArangoDBClient
+
 
 class LeidenProcessor:
-    def __init__(self, arangoGraph : ArangoDBClient):
+    def __init__(self, arangoGraph: ArangoDBClient):
         """
         Initializes the Leiden Algorithm for a given graph.
 
@@ -41,7 +42,7 @@ class LeidenProcessor:
         self.max_cluster_size = 20
         self.max_depth = 6
         self.gamma_multiplier = 2
-        
+
         # Gets the maximum value, for which exp(max_exp / self.theta) doesn't throw an error
         self.max_exp = 709 * self.theta
 
@@ -52,21 +53,37 @@ class LeidenProcessor:
         """
         Constructs a copy of the graph in the ArangoDB in memory
         """
-        self.vertices = set((v['id'], v['key']) for v in self.arangoGraph.get_aql("for v in Node return {id: v._id, key: v._key}"))
-        self.vertices |= set((v['id'], v['key']) for v in self.arangoGraph.get_aql("for v in File return {id: v._id, key: v._key}"))
+        self.vertices = set(
+            (v["id"], v["key"])
+            for v in self.arangoGraph.get_aql(
+                "for v in Node return {id: v._id, key: v._key}"
+            )
+        )
+        self.vertices |= set(
+            (v["id"], v["key"])
+            for v in self.arangoGraph.get_aql(
+                "for v in File return {id: v._id, key: v._key}"
+            )
+        )
 
         self.graph = {
-            'vertices' : {v_id for v_id, _ in self.vertices},
-            'edges' :  (edges := {
-                (edge['from'], edge['to']) : edge['weight']
-                for edge_collection in ["mentionedIn", "Relation"]
-                for edges in [
-                    self.arangoGraph.get_aql(f"for e in {edge_collection} return {{weight: e.weight, from: e._from, to: e._to}}"),
-                    self.arangoGraph.get_aql(f"for e in {edge_collection} return {{weight: e.weight, from: e._to, to: e._from}}")
-                ]
-                for edge in edges
-            }),
-            'edge_connections' : set(edges.keys())
+            "vertices": {v_id for v_id, _ in self.vertices},
+            "edges": (
+                edges := {
+                    (edge["from"], edge["to"]): edge["weight"]
+                    for edge_collection in ["mentionedIn", "Relation"]
+                    for edges in [
+                        self.arangoGraph.get_aql(
+                            f"for e in {edge_collection} return {{weight: e.weight, from: e._from, to: e._to}}"
+                        ),
+                        self.arangoGraph.get_aql(
+                            f"for e in {edge_collection} return {{weight: e.weight, from: e._to, to: e._from}}"
+                        ),
+                    ]
+                    for edge in edges
+                }
+            ),
+            "edge_connections": set(edges.keys()),
         }
 
     ### Methods to generate leiden communities
@@ -79,12 +96,14 @@ class LeidenProcessor:
         """
         if not self.partition:
             # Constructs the nested partition representing the complete hierarchical Leiden
-            partition, depth = self.get_hierarchical_leiden(self.graph, self.gamma, self.max_depth)
+            partition, depth = self.get_hierarchical_leiden(
+                self.graph, self.gamma, self.max_depth
+            )
         else:
             # Read the partition
             partition, depth = self.partition
 
-        # Parses the nested partitions into an easy to read dictionary 
+        # Parses the nested partitions into an easy to read dictionary
         return self.get_vertex_communities(partition, self.vertices, depth)
 
     def get_leiden_communities(self):
@@ -96,15 +115,17 @@ class LeidenProcessor:
         """
         if not self.partition:
             # Constructs the partition representing the complete Leiden
-            partition = self.get_leiden_parition(self.graph, self.singleton_partition(self.graph), self.gamma)
+            partition = self.get_leiden_parition(
+                self.graph, self.singleton_partition(self.graph), self.gamma
+            )
         else:
             # Read the partition
             partition = self.partition[0]
-            
+
         # Parses the partition into an easy to read dictionary
         return self.get_vertex_communities(partition, self.vertices, 1)
 
-    def get_hierarchical_leiden(self, graph : {}, gamma : float, max_depth : int):
+    def get_hierarchical_leiden(self, graph: {}, gamma: float, max_depth: int):
         """
         Constructs a nested partition for a provided graph using an hierarchical leiden approach.
 
@@ -118,9 +139,12 @@ class LeidenProcessor:
         - The total depht of the community system
         """
         # Calculates the current partitions using the Leiden Algorithm
-        partition = self.get_leiden_parition(graph, self.singleton_partition(graph), gamma)
+        partition = self.get_leiden_parition(
+            graph, self.singleton_partition(graph), gamma
+        )
         # To prevent unnecessary nesting, if partitioning was unsuccessfull, return the communities directly
-        if len(partition) <= 1: return partition[0], 0
+        if len(partition) <= 1:
+            return partition[0], 0
         max_depth -= 1
 
         # Initializes a counter for the maximum depth
@@ -132,20 +156,22 @@ class LeidenProcessor:
 
                 # If the community is to big, a sub graph using only the community, is build
                 sub_graph = {
-                    'vertices' : partition[i],
-                    'edges' :  graph["edges"],
-                    'edge_connections' : graph["edge_connections"]
+                    "vertices": partition[i],
+                    "edges": graph["edges"],
+                    "edge_connections": graph["edge_connections"],
                 }
                 # Subpartitions are then calculated
-                partition[i], current_depth = self.get_hierarchical_leiden(sub_graph, gamma * self.gamma_multiplier, max_depth)
+                partition[i], current_depth = self.get_hierarchical_leiden(
+                    sub_graph, gamma * self.gamma_multiplier, max_depth
+                )
                 # and the depht updated, if necessary
                 if current_depth >= depth:
                     depth = current_depth + 1
-                
+
         self.partition = (partition, depth)
         return partition, depth
 
-    def get_leiden_parition(self, graph : {}, partition : [{}], gamma : float):
+    def get_leiden_parition(self, graph: {}, partition: [{}], gamma: float):
         """
         Constructs partitions for a given graph using the leiden algorithm
 
@@ -157,19 +183,23 @@ class LeidenProcessor:
         Returns:
         A list of communities (partition) of the nodes in the graph
         """
-        with tqdm(desc=f"Optimizing leiden subgraph ({len(graph['vertices'])} nodes)", leave = False) as pbar:
+        with tqdm(
+            desc=f"Optimizing leiden subgraph ({len(graph['vertices'])} nodes)",
+            leave=False,
+        ) as pbar:
             while True:
                 # Optimises partition by merging nodes into communities
                 partition = self.move_nodes(graph, partition, gamma)
 
                 # Counts communities and vertices
                 partition_len = len(partition)
-                vertex_count = len(graph['vertices'])
+                vertex_count = len(graph["vertices"])
                 # Updates progress on progress bar
-                pbar.reset(total = partition_len)
+                pbar.reset(total=partition_len)
                 pbar.update(vertex_count)
                 # Breaks if no optimasation could be achived
-                if partition_len == vertex_count: break
+                if partition_len == vertex_count:
+                    break
 
                 # Splits large or sparly connected communities
                 refined_part = self.refine_partition(graph, partition, gamma)
@@ -177,7 +207,14 @@ class LeidenProcessor:
                 # Aggregates the graph (communities become nodes of the new graph)
                 graph = self.aggregate_graph(graph, refined_part)
                 # Update the partitions to use the newly generated community nodes
-                partition = [{vertex for vertex in graph['vertices'] if set(vertex) <= set(self.flatten(community))} for community in partition]
+                partition = [
+                    {
+                        vertex
+                        for vertex in graph["vertices"]
+                        if set(vertex) <= set(self.flatten(community))
+                    }
+                    for community in partition
+                ]
 
         # return a flattened version of the partitions to get rid of node nesting
         self.partition = ([list(self.flatten(community)) for community in partition], 1)
@@ -198,7 +235,9 @@ class LeidenProcessor:
         """
         if not self.partition:
             # Constructs the nested partition representing the complete hierarchical Leiden
-            partition, depth = self.get_hierarchical_leiden(self.graph, self.gamma, self.max_depth)
+            partition, depth = self.get_hierarchical_leiden(
+                self.graph, self.gamma, self.max_depth
+            )
         else:
             # Read the partition
             partition, depth = self.partition
@@ -213,23 +252,41 @@ class LeidenProcessor:
                 for community_to in partitions[partition_idx + 1]:
                     community_to_set = set(community_to)
                     if community_to_set == community_from_set:
-                        edges.setdefault((community_from, community_to), []).append((1, partition_idx + 1))
-                    elif community_to_set <= community_from_set and \
-                        (weight := self.count_connecting_edges(self.graph, community_from_set - community_to_set, community_to_set)) > 0:
-                        edges.setdefault((community_from, community_to), []).append((weight, partition_idx + 1))
+                        edges.setdefault((community_from, community_to), []).append(
+                            (1, partition_idx + 1)
+                        )
+                    elif (
+                        community_to_set <= community_from_set
+                        and (
+                            weight := self.count_connecting_edges(
+                                self.graph,
+                                community_from_set - community_to_set,
+                                community_to_set,
+                            )
+                        )
+                        > 0
+                    ):
+                        edges.setdefault((community_from, community_to), []).append(
+                            (weight, partition_idx + 1)
+                        )
 
-        graph_node = tuple(self.graph['vertices'])
+        graph_node = tuple(self.graph["vertices"])
         for community in partitions[0]:
             edges.setdefault((graph_node, community), []).append((1, 0))
 
         return {
-            "vertices" : {(community, degree + 1, idx) for degree, partition in enumerate(partitions) for idx, community in enumerate(partition)} | {(graph_node, 0, 0)},
-            "edges" : edges,
-            "height" : len(partitions)
+            "vertices": {
+                (community, degree + 1, idx)
+                for degree, partition in enumerate(partitions)
+                for idx, community in enumerate(partition)
+            }
+            | {(graph_node, 0, 0)},
+            "edges": edges,
+            "height": len(partitions),
         }
 
     ### Methods used by the leiden algorithm directly
-    def move_nodes(self, graph : {}, partition : [{}], gamma : float):
+    def move_nodes(self, graph: {}, partition: [{}], gamma: float):
         """
         Merges nodes in communities using a local move algorithm
 
@@ -243,7 +300,7 @@ class LeidenProcessor:
         """
 
         # Generates a queue, holding all vertices, that should be visited
-        node_queue = list(graph['vertices'])
+        node_queue = list(graph["vertices"])
         shuffle(node_queue)
 
         # Generates a set, holding all vertices, that should be visited a second time
@@ -259,18 +316,26 @@ class LeidenProcessor:
                 max_potts_value = 0
 
                 # Test whether seperating the node from its community is a net positive move
-                if (potts_value := self.delta_potts_model(graph, partition, gamma, node, node_community, set())) > 0:
+                if (
+                    potts_value := self.delta_potts_model(
+                        graph, partition, gamma, node, node_community, set()
+                    )
+                ) > 0:
                     # If so, save the increase in the Constant Potts Model
                     max_community = set()
                     max_potts_value = potts_value
 
                 # Calculate the increase in the Constant Potts Model for moving the current node into each community
                 for community in partition:
-                    if (potts_value := self.delta_potts_model(graph, partition, gamma, node, node_community, community)) > max_potts_value:
+                    if (
+                        potts_value := self.delta_potts_model(
+                            graph, partition, gamma, node, node_community, community
+                        )
+                    ) > max_potts_value:
                         # If the increase is better than any previously found increase, safe the current one instead
                         max_community = community
                         max_potts_value = potts_value
-                
+
                 # If a community was found, that increases the Constant Potts Model
                 if max_potts_value > 0:
                     # Remove the node from its current community
@@ -292,7 +357,7 @@ class LeidenProcessor:
                             next_queue.add(neighbor)
 
             if next_queue:
-                # Refill the node queue, by readding node neighbors of visited nodes 
+                # Refill the node queue, by readding node neighbors of visited nodes
                 node_queue = list(next_queue)
                 shuffle(node_queue)
                 next_queue = set()
@@ -303,7 +368,7 @@ class LeidenProcessor:
         # Returns the resulting partitions using the local move alforithm
         return partition
 
-    def refine_partition(self, graph : {}, partition : [{}], gamma : float):
+    def refine_partition(self, graph: {}, partition: [{}], gamma: float):
         """
         Refines the partition, by splitting large and poorly connected communities
 
@@ -320,12 +385,14 @@ class LeidenProcessor:
 
         for community in partition:
             # Improve the new generated partition, by merging nodes inside the previously discovered communities
-            refined_part = self.merge_nodes_subset(graph, refined_part, gamma, community)
+            refined_part = self.merge_nodes_subset(
+                graph, refined_part, gamma, community
+            )
 
         # Return the new refined partition
         return refined_part
 
-    def merge_nodes_subset(self, graph : {}, partition : [{}], gamma : float, subset : {}):
+    def merge_nodes_subset(self, graph: {}, partition: [{}], gamma: float, subset: {}):
         """
         Merges well connected nodes of a given subset into communities
 
@@ -339,25 +406,49 @@ class LeidenProcessor:
         The resulting refined partition after splitting communities
         """
         # Filter the subset for only well connected nodes
-        well_connected_nodes = [node for node in subset 
-            if self.count_connecting_edges(graph, {node}, subset - {node}) >= 
-            (gamma * self.get_len(node) * (self.get_len(subset) - self.get_len(node)))]
+        well_connected_nodes = [
+            node
+            for node in subset
+            if self.count_connecting_edges(graph, {node}, subset - {node})
+            >= (
+                gamma * self.get_len(node) * (self.get_len(subset) - self.get_len(node))
+            )
+        ]
         shuffle(well_connected_nodes)
-        
+
         # Merge well_connected_nodes into communities
         for node in well_connected_nodes:
             # Only merge nodes, that are yet to be merged
-            if len((node_community := self.get_community_of_node(partition, node))) > 1: continue
+            if len((node_community := self.get_community_of_node(partition, node))) > 1:
+                continue
 
             # Filter all communities in the subset for well connected communities
-            well_connected_communities = [community for community in partition
-                if community <= subset and
-                self.count_connecting_edges(graph, community, subset - community) >= 
-                (gamma * self.get_len(community) * (self.get_len(subset) - self.get_len(community)))]
+            well_connected_communities = [
+                community
+                for community in partition
+                if community <= subset
+                and self.count_connecting_edges(graph, community, subset - community)
+                >= (
+                    gamma
+                    * self.get_len(community)
+                    * (self.get_len(subset) - self.get_len(community))
+                )
+            ]
 
             # Calculate a propability distribution over all possible well connected communities using the increase in the Constant Potts Model as reference
-            probabilities = [exp(709) if (delta_potts := self.delta_potts_model(graph, partition, gamma, node, node_community, c)) >=  self.max_exp
-                else exp(delta_potts / self.theta) if delta_potts >= 0 else 0 for c in well_connected_communities]
+            probabilities = [
+                (
+                    exp(709)
+                    if (
+                        delta_potts := self.delta_potts_model(
+                            graph, partition, gamma, node, node_community, c
+                        )
+                    )
+                    >= self.max_exp
+                    else exp(delta_potts / self.theta) if delta_potts >= 0 else 0
+                )
+                for c in well_connected_communities
+            ]
 
             # Choose a random community, using the porpability distribution
             community = choices(well_connected_communities, probabilities)[0]
@@ -368,14 +459,14 @@ class LeidenProcessor:
                 node_community.remove(node)
                 if not node_community:
                     partition.remove(node_community)
-                
+
                 # Add the node the the new community
                 community.add(node)
-        
+
         # Return the resulting partition after mergint nodes in the subset
         return partition
 
-    def aggregate_graph(self, graph : {}, partition : [{}]):
+    def aggregate_graph(self, graph: {}, partition: [{}]):
         """
         Aggregates the graph by transforming communities into new nodes
 
@@ -389,35 +480,42 @@ class LeidenProcessor:
         # Generate a temporary edge dictionary. Each idx tuple, representing two communities, returns the sum of connections of all nodes within
         community_count = len(partition)
         tmp_edges = {
-            (com1, com2) : weight
-            for com1 in range(community_count) for com2 in range(community_count)
-            if (weight := sum(
-                graph['edges'].get((node1, node2), 0)
-                for node1 in partition[com1] for node2 in partition[com2]
-            )) > 0
+            (com1, com2): weight
+            for com1 in range(community_count)
+            for com2 in range(community_count)
+            if (
+                weight := sum(
+                    graph["edges"].get((node1, node2), 0)
+                    for node1 in partition[com1]
+                    for node2 in partition[com2]
+                )
+            )
+            > 0
         }
 
         # Generate a dictionary, using the idx of a community to reference a new node (community parsed into tuple, to pretain hashability of nodes)
-        vertices = {idx: tuple(self.flatten(community)) for idx,community in enumerate(partition)}
-        
+        vertices = {
+            idx: tuple(self.flatten(community))
+            for idx, community in enumerate(partition)
+        }
+
         # Generate a edge dictionary by parsing the index keys of the temporary edge dictionary into its node counterparts.
         edges = {
-            (vertices[com1], vertices[com2]) : weight
+            (vertices[com1], vertices[com2]): weight
             for (com1, com2), weight in tmp_edges.items()
         }
-        
+
         # Return a new graph structure
         return {
-            'vertices' : set(vertices.values()),
-            'edges' : edges,
-            'edge_connections' : set(edges.keys())
+            "vertices": set(vertices.values()),
+            "edges": edges,
+            "edge_connections": set(edges.keys()),
         }
 
-
-    def singleton_partition(self, graph : {}):
+    def singleton_partition(self, graph: {}):
         """
         Generates a partition, in which each node of the graph has its own community
-        
+
         Parameters:
         - graph ({}) : The graph providing the vertices of the partition
 
@@ -425,10 +523,10 @@ class LeidenProcessor:
         A list of communities
         """
         # Generates and returns singleton partitions
-        return [{vertex} for vertex in graph['vertices']]
+        return [{vertex} for vertex in graph["vertices"]]
 
     ### Constant potts model formulas
-    def constant_potts_model(self, graph : {}, partition : [{}], gamma : float):
+    def constant_potts_model(self, graph: {}, partition: [{}], gamma: float):
         """
         Calculates the constant potts model of the current graph arangement
 
@@ -441,16 +539,25 @@ class LeidenProcessor:
         The result of the constant potts model formula
         """
         return sum(
-            self.count_connecting_edges_in(graph, community) - gamma * comb(self.get_len(community), 2) 
+            self.count_connecting_edges_in(graph, community)
+            - gamma * comb(self.get_len(community), 2)
             for community in partition
         )
 
-    def delta_potts_model(self, graph : {}, partition : [{}], gamma : float, changing_node, node_community : {}, changing_community : {}):
+    def delta_potts_model(
+        self,
+        graph: {},
+        partition: [{}],
+        gamma: float,
+        changing_node,
+        node_community: {},
+        changing_community: {},
+    ):
         """
         A optimised version for the constant potts model, solving the following equation:
-        Constant potts model of the graph, simulated as if changing_node was in changing_community instead - 
+        Constant potts model of the graph, simulated as if changing_node was in changing_community instead -
             Constant potts model of the graph, with changing_node in its original community
-        
+
         Parameters:
         - graph ({}) : The graph containing the edge data for all edges
         - partition ([{}]) : The current communities of the graph
@@ -463,7 +570,8 @@ class LeidenProcessor:
         The change in the constant potts model, when simulating the node in another community
         """
         # If the node is already in its destination community, no change can be recorded
-        if changing_node in changing_community : return 0
+        if changing_node in changing_community:
+            return 0
 
         # A community containing only the node
         single_community = {changing_node}
@@ -472,7 +580,7 @@ class LeidenProcessor:
         # The original community of the node without the node in it
         small_community = node_community - single_community
 
-        def comb(c : float, n : float):
+        def comb(c: float, n: float):
             """
             Calculates the solution for the following term:
             (c over 2) - (c+n over 2)
@@ -486,15 +594,18 @@ class LeidenProcessor:
             return 0.5 * n * (1 - n) - n * c
 
         # Calculates the above formula of the constant potts model in this special case
-        return (self.count_connecting_edges(graph, changing_community, single_community)
-        - self.count_connecting_edges(graph, small_community, single_community)
-        + gamma * (
-            comb(self.get_len(changing_community), node_length)
-            - comb(self.get_len(small_community), node_length)
-        ))
+        return (
+            self.count_connecting_edges(graph, changing_community, single_community)
+            - self.count_connecting_edges(graph, small_community, single_community)
+            + gamma
+            * (
+                comb(self.get_len(changing_community), node_length)
+                - comb(self.get_len(small_community), node_length)
+            )
+        )
 
     ### Graph helper methods
-    def count_connecting_edges_in(self, graph : {}, community : {}):
+    def count_connecting_edges_in(self, graph: {}, community: {}):
         """
         Counts the connecting edges inside the given community.
 
@@ -506,11 +617,13 @@ class LeidenProcessor:
         The sum of the weights for all connections
         """
         return sum(
-            graph['edges'].get((node1, node2), 0)
-            for node1 in community for node2 in community if node1 > node2
+            graph["edges"].get((node1, node2), 0)
+            for node1 in community
+            for node2 in community
+            if node1 > node2
         )
 
-    def count_connecting_edges(self, graph : {}, community1 : {}, community2 : {}):
+    def count_connecting_edges(self, graph: {}, community1: {}, community2: {}):
         """
         Counts the connecting edges between two communities.
 
@@ -522,11 +635,12 @@ class LeidenProcessor:
         The sum of the weight for all connections between the two communities
         """
         return sum(
-            graph['edges'].get((node1, node2), 0)
-            for node1 in community1 for node2 in community2
+            graph["edges"].get((node1, node2), 0)
+            for node1 in community1
+            for node2 in community2
         )
 
-    def get_community_of_node(self, partition : [{}], node):
+    def get_community_of_node(self, partition: [{}], node):
         """
         Finds the community of a provided node.
 
@@ -538,11 +652,12 @@ class LeidenProcessor:
         the community containing the node or an empty set if unsuccessfull
         """
         for community in partition:
-            if node in community: return community
-        
+            if node in community:
+                return community
+
         return set()
 
-    def get_graph_neighbors(self, graph : {}, node):
+    def get_graph_neighbors(self, graph: {}, node):
         """
         Finds all connected nodes for a given node in a graph.
 
@@ -553,11 +668,11 @@ class LeidenProcessor:
         Returns:
         An iterator containing all connected nodes
         """
-        for neighbor in graph['vertices']:
-            if (node, neighbor) in graph['edge_connections']:
+        for neighbor in graph["vertices"]:
+            if (node, neighbor) in graph["edge_connections"]:
                 yield neighbor
 
-    def get_vertex_communities(self, partition : [{}], vertices : [], depth : int):
+    def get_vertex_communities(self, partition: [{}], vertices: [], depth: int):
         """
         Converts a depth nested community array into an easy to read dictionary of the following format:
         {
@@ -568,16 +683,16 @@ class LeidenProcessor:
         - partition ([{}]) : the nested community array to be converted
         - vertices ([]) : a list of (vertex_id, vertex_key) tuples, which can be used to find a given node in the arangoDB graph
         - depth (int) : the depth of the nesting in the community array
-        
+
         Returns:
         The community dictionary
         """
         # All vertices are combined into a single community
-        if (depth == 0):
-            return {vertex_id : [idx] for idx, (vertex_id, _) in enumerate(vertices)}
+        if depth == 0:
+            return {vertex_id: [idx] for idx, (vertex_id, _) in enumerate(vertices)}
 
         # Initializes the easy to read community dictionary
-        communities = {vertex_id : [] for vertex_id, _ in vertices}
+        communities = {vertex_id: [] for vertex_id, _ in vertices}
 
         # Initialize an array, which will be filled with the communities flattened to an index degree
         flat_partitions = [[] for _ in range(depth)]
@@ -594,7 +709,7 @@ class LeidenProcessor:
         # Returns the dictionary
         return communities
 
-    def get_community_nodes(self, partition : [{}], vertices : [], depth : int):
+    def get_community_nodes(self, partition: [{}], vertices: [], depth: int):
         """
         Transforms a partition into its community vertices counterpart.
 
@@ -602,7 +717,7 @@ class LeidenProcessor:
         - partition ([{}]) : the nested community array to be converted
         - vertices ([]) : a list of (vertex_id, vertex_key) tuples, which can be used to find a given node in the arangoDB graph
         - depth (int) : the depth of the nesting in the community array
-        
+
         Returns:
         The community nodes array
         """
@@ -613,9 +728,14 @@ class LeidenProcessor:
             self.flatten_partition_depth(community, depth + 1, flat_partitions)
 
         # Returns the flat partitions with communities transformed to tuples, to be hashable nodes
-        return [[tuple(community) for community in partition] for partition in flat_partitions]
+        return [
+            [tuple(community) for community in partition]
+            for partition in flat_partitions
+        ]
 
-    def flatten_partition_depth(self, community : [], depth : int, mapping : [[]], idx : int = 0):
+    def flatten_partition_depth(
+        self, community: [], depth: int, mapping: [[]], idx: int = 0
+    ):
         """
         Helper function to recursivly flatten the community into multiple levels, storing each step into the mapping array
 
@@ -651,7 +771,7 @@ class LeidenProcessor:
                 yield from self.flatten(content)
         else:
             yield something
-    
+
     def get_len(self, something):
         """
         Counts the total number of elements in a nested list / set / tuple.

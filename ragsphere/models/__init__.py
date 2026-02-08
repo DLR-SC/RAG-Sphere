@@ -1,4 +1,4 @@
-from .indexer import (
+from ragsphere.models.indexer import (
     GARAGIndexerConfig,
     GraphRAGIndexerConfig,
     NaiveGRIndexerConfig,
@@ -7,7 +7,7 @@ from .indexer import (
     HybridGRIndexerConfig,
     # ADD MORE
 )
-from .retriever import (
+from ragsphere.models.retriever import (
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
@@ -27,7 +27,6 @@ __all__ = [
     NaiveRAGIndexerConfig,
     VectorGRIndexerConfig,
     HybridGRIndexerConfig,
-    
     GARAGRetrieverConfig,
     GraphRAGRetrieverConfig,
     NaiveRAGRetrieverConfig,
@@ -38,4 +37,4 @@ __all__ = [
     HybridCypherGRRetrieverConfig,
     Text2CypherRetrieverConfig,
     # ADD MORE
-] 
+]
