@@ -1,8 +1,13 @@
+#!/usr/bin/env bash
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 if [ "$1" == "init" ]; then
     docker compose -f "$PARENT_DIR/docker/docker-compose_init.yml" up
+elif [ "$1" == "db" ]; then
+    docker compose -f "$PROJECT_ROOT/docker/docker-compose_db.yml" up
 elif [ "$1" == "down" ]; then
     docker compose -f "$PARENT_DIR/docker/docker-compose_init.yml" down
     docker compose -f "$PARENT_DIR/docker/docker-compose_eri.yml" down
