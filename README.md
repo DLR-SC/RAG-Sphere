@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./docs/illustrations/logo__2_.png" alt="RAGLib Logo" width="300">
+<img src="./docs/illustrations/logo__2_.png" alt="RAGLib Logo" width="260">
 
 
 ## A Unified Library of Retrieval-Augmented Generation Techniques with Implementations, Comparisons, and a Practical Selection Guide
@@ -24,45 +24,30 @@
   <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="1300">
 </div>
 
+---
 
-## 🔧 Getting Started
+## 🚀 Quickstart
 
-To preview the documentation locally:
+All instructions, usage guides, and examples for RAG-Sphere are available in the official documentation.
 
-1. **Install the required dependencies listed in 'requirements.txt' .**
+👉 **Get started here:** [https://dlr-sc.github.io/RAG-Sphere/](https://dlr-sc.github.io/RAG-Sphere/)
 
-```py
-pip install -r requirements.txt
-```
-
-You can install the minimal requirements for the documentation page using:
-
-```py
-pip install mkdocs mkdocs-material mkdocs-jupyter
-```
-
-2. **Start the development server:**
-
-```py
-mkdocs serve
-```
-
-3. **Open your browser and navigate to:** [http://127.0.0.1:8000](http://127.0.0.1:8000)
-
-   The documentation will automatically reload as you edit the files
-
-## 🔧 Build the Documentation (Optional)
-
-To build the static site for deployment:
-
-```py
-mkdocs build
-```
-
-The site will be generated in the `site/` directory.
+This page contains everything you need to install RAG-Sphere and build your first pipeline.
 
 ---
 
-## 🚀 Quickstart Guide
-+ Check out the [Notebook](/raglib/pipeline-test.ipynb)
-+ See the slides for more information (RAGLIB.pptx)
+## 📦 Installation
+
+Clone the repository and install locally:
+
+```bash
+git clone https://github.com/DLR-SC/RAG-Sphere.git
+cd RAG-Sphere
+pip install .
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
