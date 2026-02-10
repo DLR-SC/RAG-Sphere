@@ -34,3 +34,19 @@ GARAG is an advanced Retrieval-Augmented Generation (RAG) system that prioritize
 1. **Fast query time**: The query process relies on embeddings and vector similarity scores, making it optimized for speed.
 
 1. **Global Sensmaking**: Although GARAG does not provide community summaries directly, the usage of these summaries in the query process enables global sensmaking for filtering information.
+
+
+
+
+### GRAPH RAG
+
+An implementation inspired by Graph RAG by Microsoft. The data is read and transformed into a knowledge graph, stored in ArangoDB. The resulting nodes are then grouped by their topic and summarized resulting in thematic subgraphs. During a query, these thematic summaries and the user prompt are then passed to a LLM, which generates partial answers on the information provided and a confidence value, stating the helpfulness of the provided answer. These partial answers are then ranked by their confidence and the best results are returned to the user.
+
+This algorithm takes an extra argument, the community level to search on. There, a level of 0 describes the usage of a single node, capturing the entire information corpus in a small description. Higher values yield more nodes, therefore providing a more precise description on multiple topics. The maximum level can only be inferred by a manual lookup in the GraphDB used. Higher values always also supply the descriptions of all nodes of lower community level. A value of 1 or 2 is advisable.
+
+This kind of initialization takes very long, but might be worth it, as following querys are not matched by text similarity but by the topic they reside in. The generated knowledge graph is shared between Graph Rag, Graph Rag Rag, and Garag. When using this implementation, keep in mind that a longer retrieval time is expected.
+
+
+### GARAG
+
+An implementation that reduces the hallucination of the filtered information. Communities with fitting information are first found using an embedding comparison in the Elasticsearch database. The original sources (the raw data used to generate the knowledge graph) of these communities are then ranked by their influence on these summaries and the accuracy of the vector comparison of those with the user query. The top original sources are then returned to the user. Therefore, this approach can be seen as Graph-Assisted RAG (or GARAG). It returns the same kind of information that would be obtained from a normal RAG query on the original documents, using a complex, topic-based decision-making process, instead of a direct vector comparison. It is recommended to use this method, as it combines a very fast retrieval time with good precision.

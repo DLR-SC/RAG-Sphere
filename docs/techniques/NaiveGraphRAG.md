@@ -4,7 +4,10 @@
 
 The Naive GraphRAG variant leverages a custom implementation of the Microsoft GraphRAG Approach, incorporating key principles from VectorRAG to optimize query performance in this graph-based system.
 
+
 ## Method Details
+
+Instead of generating partial answers using LLMs, community summaries are filtered through an embedding comparison in the Elasticsearch database. The information summaries of the most fitting communities are then returned to the user. Therefore, this approach can be seen as a naive RAG (Rapid Answer Generation) approach on community summaries. While this implementation reduces retrieval time compared to Graph Rag, precision on non-global questions is reduced.
 
 1. **Document Processing**:
 

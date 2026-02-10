@@ -4,13 +4,13 @@
 
 | Name                | Installation                                                 | Purpose                                                                             |
 | ------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| Python ^3.10    | [Download](https://www.python.org/downloads/)                | The library is Python-based.                                                        |
+| Python ^3.11    | [Download](https://www.python.org/downloads/)                | The library is Python-based.                                                        |
 
 
 ## Install Dependencies
 
 ```python
-pip3 install -r requirements.txt
+pip install .
 ```
 
 ## Set Up Your Workspace Variables
@@ -38,6 +38,8 @@ If you just want to get started quickly, follow the steps provided here. When wa
 
 
 ## Initialization with docker
+
+#### GARAG & Naive GraphRAG
 
 Before running the Initialization, follow these steps to make sure, that everything is setup:
 
@@ -69,6 +71,8 @@ Before running the Initialization, follow these steps to make sure, that everyth
 An in depth description of all values in the config file is provided in the section [Config.ini](#configini).
 
 ## Initialization without docker
+
+#### GARAG & Naive GraphRAG
 
 Before running the Initialization, follow these steps to make sure, that everything is setup:
 
@@ -104,27 +108,6 @@ Before running the Initialization, follow these steps to make sure, that everyth
 An in depth description of all values in the config file is provided in the section [Config.ini](#configini).
 
 
-## Provided retrieval implementations
-
-### RAG
-
-A naive rag implementation. All files are read and their content is split into chunks, preserving chapters where possible. Their embeddings are then stored into an Elasticsearch database, which will be queried for every user prompt.
-
-### GRAPH RAG
-
-An implementation inspired by Graph RAG by Microsoft. The data is read and transformed into a knowledge graph, stored in ArangoDB. The resulting nodes are then grouped by their topic and summarized resulting in thematic subgraphs. During a query, these thematic summaries and the user prompt are then passed to a LLM, which generates partial answers on the information provided and a confidence value, stating the helpfulness of the provided answer. These partial answers are then ranked by their confidence and the best results are returned to the user.
-
-This algorithm takes an extra argument, the community level to search on. There, a level of 0 describes the usage of a single node, capturing the entire information corpus in a small description. Higher values yield more nodes, therefore providing a more precise description on multiple topics. The maximum level can only be inferred by a manual lookup in the GraphDB used. Higher values always also supply the descriptions of all nodes of lower community level. A value of 1 or 2 is advisable.
-
-This kind of initialization takes very long, but might be worth it, as following querys are not matched by text similarity but by the topic they reside in. The generated knowledge graph is shared between Graph Rag, Graph Rag Rag, and Garag. When using this implementation, keep in mind that a longer retrieval time is expected.
-
-### NAIVE GRAPH RAG
-
-An implementation that reduces the query time of the Graph Rag implementation. Instead of generating partial answers using LLMs, community summaries are filtered through an embedding comparison in the Elasticsearch database. The information summaries of the most fitting communities are then returned to the user. Therefore, this approach can be seen as a naive RAG (Rapid Answer Generation) approach on community summaries. While this implementation reduces retrieval time compared to Graph Rag, precision on non-global questions is reduced.
-
-### GARAG
-
-An implementation that reduces the hallucination of the filtered information. Communities with fitting information are first found using an embedding comparison in the Elasticsearch database. The original sources (the raw data used to generate the knowledge graph) of these communities are then ranked by their influence on these summaries and the accuracy of the vector comparison of those with the user query. The top original sources are then returned to the user. Therefore, this approach can be seen as Graph-Assisted RAG (or GARAG). It returns the same kind of information that would be obtained from a normal RAG query on the original documents, using a complex, topic-based decision-making process, instead of a direct vector comparison. It is recommended to use this method, as it combines a very fast retrieval time with good precision.
 
 ## Config.ini
 
@@ -201,4 +184,3 @@ All other file types raise a warning, which may be examined by the user afterwar
 
 - For more details about configuring the pipeline, see the [configuration documentation](config/overview.md).
 - To learn more about Initialization, refer to the [Initialization documentation](config/index.md).
-- Check out our [visualization guide](config/visualization_guide.md) for a more interactive experience in debugging and exploring the knowledge graph.

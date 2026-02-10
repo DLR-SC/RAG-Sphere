@@ -148,55 +148,8 @@ In this step, we generate a summary of each community using the LLM. This will a
 
 In this step, each _community report_ is then summarized via the LLM for shorthand use.
 
-### Community Reports Table
 
-At this point, some bookkeeping work is performed and we export the **Community Reports** tables.
-
-## Phase 5: Document Processing
-
-In this phase of the workflow, we create the _Documents_ table for the knowledge model.
-
-```mermaid
----
-title: Document Processing
----
-flowchart LR
-    aug[Augment] --> dp[Link to TextUnits] --> dg[Documents Table]
-```
-
-### Augment with Columns (CSV Only)
-
-If the workflow is operating on CSV data, you may configure your workflow to add additional fields to Documents output. These fields should exist on the incoming CSV tables. Details about configuring this can be found in the [configuration documentation](../config/overview.md).
-
-### Link to TextUnits
-
-In this step, we link each document to the text-units that were created in the first phase. This allows us to understand which documents are related to which text-units and vice-versa.
-
-### Documents Table
-
-At this point, we can export the **Documents** table into the knowledge Model.
-
-## Phase 6: Network Visualization (optional)
-
-In this phase of the workflow, we perform some steps to support network visualization of our high-dimensional vector spaces within our existing graphs. At this point there are two logical graphs at play: the _Entity-Relationship_ graph and the _Document_ graph.
-
-```mermaid
----
-title: Network Visualization Workflows
----
-flowchart LR
-    ag[Graph Table] --> ge[Node2Vec Graph Embedding] --> ne[Umap Entities] --> ng[Entities Table]
-```
-
-### Graph Embedding
-
-In this step, we generate a vector representation of our graph using the Node2Vec algorithm. This will allow us to understand the implicit structure of our graph and provide an additional vector-space in which to search for related concepts during our query phase.
-
-### Dimensionality Reduction
-
-For each of the logical graphs, we perform a UMAP dimensionality reduction to generate a 2D representation of the graph. This will allow us to visualize the graph in a 2D space and understand the relationships between the nodes in the graph. The UMAP embeddings are reduced to two dimensions as x/y coordinates.
-
-## Phase 7: Text Embedding
+## Phase 5: Text Embedding
 
 For all artifacts that require downstream vector search, we generate text embeddings as a final step. These embeddings are written directly to a configured vector store. By default we embed entity descriptions, text unit text, and community report text.
 

@@ -1,4 +1,4 @@
-# GraphRAG: <br/> Graph-Enhanced Retrieval-Augmented Generation
+# GraphRAG
 
 ## Overview
 

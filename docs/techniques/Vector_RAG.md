@@ -4,7 +4,10 @@
 
 Vector RAG is a lightweight Retrieval-Augmented Generation (RAG) system that leverages embedding-based retrieval to efficiently retrieve relevant information. This approach, also known as naive RAG, has gained popularity due to its simplicity and efficiency.
 
+
 ## Method Details
+
+All files are read and their content is split into chunks, preserving chapters where possible. Their embeddings are then stored into an Elasticsearch database, which will be queried for every user prompt.
 
 1. **Document indexing**:
 

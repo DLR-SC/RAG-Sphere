@@ -1,4 +1,4 @@
-# Microsoft GraphRAG: <br/> Enhancing Retrieval-Augmented Generation with Knowledge Graphs
+# Microsoft GraphRAG
 
 ## Overview
 

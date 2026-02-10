@@ -1,17 +1,20 @@
-## Introduction
-
-Retrieval-Augmented Generation (RAG) is revolutionizing the way we combine information retrieval with generative AI. This repository showcases a curated collection of advanced techniques designed to supercharge your RAG systems, enabling them to deliver more accurate, contextually relevant, and comprehensive responses.
-
-Our goal is to provide a valuable resource for researchers and practitioners looking to push the boundaries of what's possible with RAG.
+The following techniques are currently included in the library:
 
 
-**RAGlib provides a high-level implementation of most common RAG algorithms independently from the database backend.**
-
-
-<p align="center">
-<img src="/illustrations/rag_lib.png" alt="" width="400"/>
-</p>
-<p align="center">
-</p>
-
-
+|  | Category | Technique | Ref. | Demo |
+|--|----------|-----------|------|------|
+| 1 | Foundational 🧱 | Vector RAG | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/langchain-ai/langchain)  |  |
+| 2 | Advanced Architecture 🛰️ | Vector GraphRAG | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/neo4j/neo4j-graphrag-python) | [![jupyter](https://img.shields.io/badge/Jupyter-View-rgb(243, 118, 38)?style=flat&logo=jupyter)](../demo/Vector_GraphRAG.ipynb) |
+| 3 | Advanced Architecture 🛰️ | Vector Cypher GraphRAG | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/neo4j/neo4j-graphrag-python) | [![jupyter](https://img.shields.io/badge/Jupyter-View-rgb(243, 118, 38)?style=flat&logo=jupyter)](../demo/Vector_Cypher_GraphRAG.ipynb) |
+| 4 | Advanced Architecture 🛰️ | Hybrid GraphRAG | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/neo4j/neo4j-graphrag-python) | [![jupyter](https://img.shields.io/badge/Jupyter-View-rgb(243, 118, 38)?style=flat&logo=jupyter)](../demo/Hybrid_GraphRAG.ipynb) |
+| 5 | Advanced Architecture 🛰️ | Hybrid Cypher GraphRAG | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/neo4j/neo4j-graphrag-python) | [![jupyter](https://img.shields.io/badge/Jupyter-View-rgb(243, 118, 38)?style=flat&logo=jupyter)](../demo/Hybrid_Cypher_GraphRAG.ipynb) |
+| 6 | Advanced Architecture 🛰️ | Text2Cypher | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/neo4j/neo4j-graphrag-python) | [![jupyter](https://img.shields.io/badge/Jupyter-View-rgb(243, 118, 38)?style=flat&logo=jupyter)](../demo/Text2Cypher.ipynb) |
+| 7 | Advanced Architecture 🛰️ | GARAG |  | [![jupyter](https://img.shields.io/badge/Jupyter-View-rgb(243, 118, 38)?style=flat&logo=jupyter)](../demo/GARAG.ipynb) |
+| 8 | Advanced Architecture 🛰️ | Naive GraphRAG |  | [![jupyter](https://img.shields.io/badge/Jupyter-View-rgb(243, 118, 38)?style=flat&logo=jupyter)](demo/Naive_GraphRAG.ipynb) |
+| 9 | Advanced Architecture 🛰️ | Microsoft GraphRAG - <em>in progress</em> | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/microsoft/graphrag) [![arxiv](https://img.shields.io/badge/arXiv-View-rgb(179, 27, 27)?style=flat&logo=arxiv)](https://arxiv.org/abs/2404.16130) | |
+| 10 | Advanced Architecture 🛰️ | LightRAG - <em>in progress</em> | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/HKUDS/LightRAG) [![arxiv](https://img.shields.io/badge/arXiv-View-rgb(179, 27, 27)?style=flat&logo=arxiv)](https://arxiv.org/abs/2410.05779) |  |
+| 11 | Advanced Architecture 🛰️ | PathRAG - <em>in progress</em> | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/BUPT-GAMMA/PathRAG) [![arxiv](https://img.shields.io/badge/arXiv-View-rgb(179, 27, 27)?style=flat&logo=arxiv)](https://arxiv.org/abs/2502.14902) |  |
+| 12 | Advanced Architecture 🛰️ | GNN-RAG - <em>in progress</em> | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/microsoft/graphrag) [![arxiv](https://img.shields.io/badge/arXiv-View-rgb(179, 27, 27)?style=flat&logo=arxiv)](https://arxiv.org/abs/2405.20139) | |
+| 13 | Advanced Architecture 🛰️ | T-RAG - <em>in progress</em> | [![github](https://img.shields.io/badge/GitHub-View-blue?style=flat&logo=github)](https://github.com/microsoft/graphrag) [![arxiv](https://img.shields.io/badge/arXiv-View-rgb(179, 27, 27)?style=flat&logo=arxiv)](https://arxiv.org/abs/2402.07483) | |
+| 14 | Context Enrichment 🧩 |  |  | |
+| 15 | Query Enhancement ✨ |  |  | |

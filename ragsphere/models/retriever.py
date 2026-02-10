@@ -39,7 +39,7 @@ class GraphRAGRetrieverConfig(BaseRetrieverConfig):
 
 
 @dataclass
-class NaiveRAGRetrieverConfig(BaseRetrieverConfig):
+class NaiveGRRetrieverConfig(BaseRetrieverConfig):
     name: ClassVar[RetrieverType] = RetrieverType.NAIVEGR
     top_k: int = 1024  # The maximum number of matching information to return
     confidence_cutoff: float = 0.04  # Community selection confidence cutoff

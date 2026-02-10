@@ -164,18 +164,23 @@ nav:
   - Techniques:
     - Overview: techniques/index.md
     - Vector RAG ◈: techniques/simpleRAG.md
-    - T-RAG ◈: techniques/T-RAG.md
-    - GNN-RAG ◈: techniques/GNN-RAG.md
+    #- T-RAG ◈: techniques/T-RAG.md
+    #- GNN-RAG ◈: techniques/GNN-RAG.md
+    - Vector GraphRAG: techniques/Vector_GraphRAG.md
+    - Vector Cypher GraphRAG: techniques/Vector_Cypher_GraphRAG.md
+    - Hybrid GraphRAG: techniques/Hybrid_GraphRAG.md
+    - Hybrid Cypher GraphRAG: techniques/Hybrid_Cypher_GraphRAG.md
     - Microsoft GraphRAG ◈:
       - Overview: techniques/GraphRAG-overview.md
       - Dataflow: techniques/GraphRAG-dataflow.md
-    - GraphRAG Variant ◈: techniques/GraphRAG.md
-    - LightRAG ◈: techniques/LightRAG.md
-    - PathRAG ◈: techniques/PathRAG.md
+    #- GraphRAG ◈: techniques/GraphRAG.md
+    #- LightRAG ◈: techniques/LightRAG.md
+    #- PathRAG ◈: techniques/PathRAG.md
     - GARAG ◈: techniques/GARAG.md
     - Naive GraphRAG ◈: techniques/NaiveGraphRAG.md
+
   - Insights:
-    - Overview 💡: insights/index.md
+    - Overview: insights/index.md
     - Technique Comparison ⚖️: insights/comparison.md
     - Practical Selection Guide 🧭: insights/selection.md
   #- Configuration:
@@ -197,4 +202,3 @@ nav:
       - Microsoft GraphRAG: ""
   - References:
     - Techniques: references/techniques.md
-    - Data: references/data.md

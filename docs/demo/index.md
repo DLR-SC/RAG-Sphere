@@ -1,12 +1,13 @@
 
-# RAG Technique Notebooks
+# Example Notebooks
 
-The following is a collection of demo Jupyter notebooks showcasing various Retrieval-Augmented Generation (RAG) techniques:
+The following is a list of Jupyter notebooks that demonstrate how to use the included Retrieval-Augmented Generation techniques.
 
-- [RAG Notebook](demo.ipynb)
-- [GNN-RAG Notebook](demo.ipynb)
-- [T-RAG Notebook](demo.ipynb)
-- [GraphRAG Notebook](demo.ipynb)
-- [Microsoft GraphRAG Notebook](demo.ipynb)
-
-The test dataset for these notebooks can be found in [dataset.zip]().
+- [Vector RAG Notebook](Vector_RAG.ipynb)
+- [Vector GraphRAG Notebook](Vector_GraphRAG.ipynb)
+- [Vector Cypher GraphRAG Notebook](Vector_Cypher_GraphRAG.ipynb)
+- [Hybrid GraphRAG Notebook](Hybrid_GraphRAG.ipynb)
+- [Hybrid Cypher GraphRAG Notebook](Hybrid_Cypher_GraphRAG.ipynb)
+- [Text2Cypher Notebook](Text2Cypher.ipynb)
+- [GARAG Notebook](GARAG.ipynb)
+- [Naive GraphRAG Notebook](Naive_GraphRAG.ipynb)

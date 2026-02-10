@@ -228,4 +228,8 @@ def _text2cypher_retrieve(
 
     response = retriever.search(query_text=prompt)
 
-    return {"cypher": response.metadata["cypher"], "retriever_result": response.items}
+    return {
+        "cypher": response.metadata["cypher"],
+        "retriever_result": response.items,
+        "schema": formatted_schema,
+    }
