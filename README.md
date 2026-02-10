@@ -24,15 +24,6 @@
   <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="1300">
 </div>
 
----
-
-## 🚀 Quickstart
-
-All instructions, usage guides, and examples for RAG-Sphere are available in the official documentation.
-
-👉 **Get started here:** [https://dlr-sc.github.io/RAG-Sphere/](https://dlr-sc.github.io/RAG-Sphere/)
-
-This page contains everything you need to install RAG-Sphere and build your first pipeline.
 
 ---
 
@@ -45,6 +36,17 @@ git clone https://github.com/DLR-SC/RAG-Sphere.git
 cd RAG-Sphere
 pip install .
 ```
+
+---
+
+## 🚀 Quickstart
+
+All instructions, usage guides, and examples for RAG-Sphere are available in the official documentation.
+
+👉 **Get started here:** [https://dlr-sc.github.io/RAG-Sphere/](https://dlr-sc.github.io/RAG-Sphere/)
+
+This page contains everything you need to install RAG-Sphere and build your first pipeline.
+
 
 ---
 
