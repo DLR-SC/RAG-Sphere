@@ -28,3 +28,5 @@ db/elastic_data/**
 !db/elastic_data/README.md
 db/postgres_data
 resources/*.log
+
+public/
