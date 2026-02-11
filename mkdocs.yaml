@@ -178,27 +178,31 @@ nav:
     #- PathRAG ◈: techniques/PathRAG.md
     - GARAG ◈: techniques/GARAG.md
     - Naive GraphRAG ◈: techniques/NaiveGraphRAG.md
-
   - Insights:
     - Overview: insights/index.md
     - Technique Comparison ⚖️: insights/comparison.md
     - Practical Selection Guide 🧭: insights/selection.md
-  #- Configuration:
-  #  - Overview: config/index.md
-  #  - Language Model Selection: config/model-selection.md
-  #  - RAG Technique Selection: config/technique-selection.md
-  #  - Dataset Selection: ''
-  #  - Database Selection: config/database-selection.md
   - ERI:
     - Overview: eri/index.md
     - Configuration: eri/config.md
   - Demo:
     - Overview: demo/index.md
     - Notebooks:
-      - RAG: demo/simple_rag.ipynb
-      - T-RAG: ""
-      - GNN-RAG: ""
-      - GraphRAG: ""
-      - Microsoft GraphRAG: ""
+      - Vector RAG: demo/Vector_RAG.ipynb
+      - Vector GraphRAG: demo/Vector_GraphRAG.ipynb
+      - Vector Cypher GraphRAG: demo/Vector_Cypher_GraphRAG.ipynb
+      - Hybrid GraphRAG: demo/Hybrid_GraphRAG.ipynb
+      - Hybrid Cypher GraphRAG: demo/Hybrid_Cypher_GraphRAG.ipynb
+      - Text2Cypher: demo/Text2Cypher.ipynb
+      - GARAG: demo/GARAG.ipynb
+      - Naive GraphRAG: demo/Naive_GraphRAG.ipynb
   - References:
     - Techniques: references/techniques.md
+
+
+  #- Configuration:
+  #  - Overview: config/index.md
+  #  - Language Model Selection: config/model-selection.md
+  #  - RAG Technique Selection: config/technique-selection.md
+  #  - Dataset Selection: ''
+  #  - Database Selection: config/database-selection.md
