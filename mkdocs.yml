@@ -3,13 +3,13 @@ site_name: RAGsphere
 site_author: Onur Koc
 site_description: RAGsphere page description ..
 site_url: https://dlr.rag-spehere.de
-docs_dir: 'docs'
+docs_dir: "docs"
 site_dir: public
 
 # Repository
 repo_name: DLR-SC/RAG-Sphere
 repo_url: https://github.com/DLR-SC/RAG-Sphere/tree/rag-sphere
-#edit_uri: 
+#edit_uri:
 #copyright:
 
 # Plugins
@@ -119,17 +119,17 @@ markdown_extensions:
   # pymdownx blocks
   - pymdownx.blocks.admonition:
       types:
-      - note
-      - attention
-      - caution
-      - danger
-      - error
-      - tip
-      - hint
-      - warning
-      # Custom types
-      - info
-      - check
+        - note
+        - attention
+        - caution
+        - danger
+        - error
+        - tip
+        - hint
+        - warning
+        # Custom types
+        - info
+        - check
   - pymdownx.blocks.details:
   - pymdownx.arithmatex:
       generic: true
@@ -159,46 +159,45 @@ extra_css:
 # Page tree
 nav:
   - Home:
-    - Welcome: index.md
-    - Getting Started: getting-started.md
+      - Welcome: index.md
+      - Getting Started: getting-started.md
   - Techniques:
-    - Overview: techniques/index.md
-    - Vector RAG ◈: techniques/simpleRAG.md
-    #- T-RAG ◈: techniques/T-RAG.md
-    #- GNN-RAG ◈: techniques/GNN-RAG.md
-    - Vector GraphRAG: techniques/Vector_GraphRAG.md
-    - Vector Cypher GraphRAG: techniques/Vector_Cypher_GraphRAG.md
-    - Hybrid GraphRAG: techniques/Hybrid_GraphRAG.md
-    - Hybrid Cypher GraphRAG: techniques/Hybrid_Cypher_GraphRAG.md
-    - Microsoft GraphRAG ◈:
-      - Overview: techniques/GraphRAG-overview.md
-      - Dataflow: techniques/GraphRAG-dataflow.md
-    #- GraphRAG ◈: techniques/GraphRAG.md
-    #- LightRAG ◈: techniques/LightRAG.md
-    #- PathRAG ◈: techniques/PathRAG.md
-    - GARAG ◈: techniques/GARAG.md
-    - Naive GraphRAG ◈: techniques/NaiveGraphRAG.md
+      - Overview: techniques/index.md
+      - Vector RAG ◈: techniques/simpleRAG.md
+      #- T-RAG ◈: techniques/T-RAG.md
+      #- GNN-RAG ◈: techniques/GNN-RAG.md
+      - Vector GraphRAG: techniques/Vector_GraphRAG.md
+      - Vector Cypher GraphRAG: techniques/Vector_Cypher_GraphRAG.md
+      - Hybrid GraphRAG: techniques/Hybrid_GraphRAG.md
+      - Hybrid Cypher GraphRAG: techniques/Hybrid_Cypher_GraphRAG.md
+      - Microsoft GraphRAG ◈:
+          - Overview: techniques/GraphRAG-overview.md
+          - Dataflow: techniques/GraphRAG-dataflow.md
+      #- GraphRAG ◈: techniques/GraphRAG.md
+      #- LightRAG ◈: techniques/LightRAG.md
+      #- PathRAG ◈: techniques/PathRAG.md
+      - GARAG ◈: techniques/GARAG.md
+      - Naive GraphRAG ◈: techniques/NaiveGraphRAG.md
   - Insights:
-    - Overview: insights/index.md
-    - Technique Comparison ⚖️: insights/comparison.md
-    - Practical Selection Guide 🧭: insights/selection.md
+      - Overview: insights/index.md
+      - Technique Comparison ⚖️: insights/comparison.md
+      - Practical Selection Guide 🧭: insights/selection.md
   - ERI:
-    - Overview: eri/index.md
-    - Configuration: eri/config.md
+      - Overview: eri/index.md
+      - Configuration: eri/config.md
   - Demo:
-    - Overview: demo/index.md
-    - Notebooks:
-      - Vector RAG: demo/Vector_RAG.ipynb
-      - Vector GraphRAG: demo/Vector_GraphRAG.ipynb
-      - Vector Cypher GraphRAG: demo/Vector_Cypher_GraphRAG.ipynb
-      - Hybrid GraphRAG: demo/Hybrid_GraphRAG.ipynb
-      - Hybrid Cypher GraphRAG: demo/Hybrid_Cypher_GraphRAG.ipynb
-      - Text2Cypher: demo/Text2Cypher.ipynb
-      - GARAG: demo/GARAG.ipynb
-      - Naive GraphRAG: demo/Naive_GraphRAG.ipynb
+      - Overview: demo/index.md
+      - Notebooks:
+          - Vector RAG: demo/Vector_RAG.ipynb
+          - Vector GraphRAG: demo/Vector_GraphRAG.ipynb
+          - Vector Cypher GraphRAG: demo/Vector_Cypher_GraphRAG.ipynb
+          - Hybrid GraphRAG: demo/Hybrid_GraphRAG.ipynb
+          - Hybrid Cypher GraphRAG: demo/Hybrid_Cypher_GraphRAG.ipynb
+          - Text2Cypher: demo/Text2Cypher.ipynb
+          - GARAG: demo/GARAG.ipynb
+          - Naive GraphRAG: demo/Naive_GraphRAG.ipynb
   - References:
-    - Techniques: references/techniques.md
-
+      - Techniques: references/techniques.md
 
   #- Configuration:
   #  - Overview: config/index.md
